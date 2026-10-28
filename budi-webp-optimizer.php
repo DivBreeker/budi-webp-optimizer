@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name:       BUDI WebP Optimizer
- * Plugin URI:        https://budistudio.com/plugins/budi-webp-optimizer
+ * Plugin URI:        https://budistudio.vercel.app/
  * Description:       Convert smarter. Load faster. A lightweight, high-performance image optimization plugin by BUDI Studio designed to reduce file sizes, preserve visual quality, and ensure seamless website speed.
  * Version:           1.0.0
  * Author:            BUDI Studio
- * Author URI:        https://budistudio.com
+ * Author URI:        https://budistudio.vercel.app/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       budi-webp-optimizer
