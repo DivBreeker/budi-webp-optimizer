@@ -1,0 +1,21 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Backup and temporary files
+*.bak
+*.tmp
+*.log
+
+# WordPress uploads / backups
+budi-webp-optimizer-backups/
