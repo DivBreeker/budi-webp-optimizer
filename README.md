@@ -26,7 +26,8 @@
 - **Zero Frontend Bloat**: Admin scripts and CSS are only enqueued on plugin admin screens. Zero frontend scripts injected.
 - **Pixel-Perfect Modern Dashboard**: Real-time stats, animated SVG donut chart, storage savings calculator, and batch AJAX background processing.
 - **Preserved Attachment IDs**: Maintains WordPress Attachment IDs across all conversions so WooCommerce product galleries, Elementor layouts, and theme links never break.
-- **1-Click Rollback / Restore**: Original unmodified images are automatically backed up to a protected directory. Restore anytime with a single click.
+- **1-Click Rollback & Backup Management**: Original unmodified images are automatically backed up to a protected directory when enabled. Restore anytime or permanently delete backups to reclaim server disk space.
+- **Dedicated Management Hubs**: Purpose-built views for Overview Dashboard, Media Library Optimizer, Bulk Conversion Center, Backup Management, and Diagnostic Reports.
 
 ---
 

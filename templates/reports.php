@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $summary = BWO_Media_Scanner::get_summary_stats();
 $server  = BWO_Server_Check::get_report();
-$logs    = get_option( 'bwo_recent_logs', array() );
+$logs    = BWO_Logger::get_logs();
 ?>
 
 <div class="bwo-wrap">
@@ -26,6 +26,10 @@ $logs    = get_option( 'bwo_recent_logs', array() );
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
 				<span><?php esc_html_e( 'Back to Dashboard', 'budi-webp-optimizer' ); ?></span>
 			</a>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=bwo-media-library' ) ); ?>" class="bwo-header-link">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+				<span><?php esc_html_e( 'Media Library', 'budi-webp-optimizer' ); ?></span>
+			</a>
 		</div>
 	</header>
 
@@ -33,12 +37,13 @@ $logs    = get_option( 'bwo_recent_logs', array() );
 		<div class="bwo-title-meta">
 			<div class="bwo-title-heading">
 				<h1><?php esc_html_e( 'Optimization & Performance Reports', 'budi-webp-optimizer' ); ?></h1>
+				<span class="bwo-version-badge">v<?php echo esc_html( BWO_VERSION ); ?></span>
 			</div>
 			<p class="bwo-subtitle"><?php esc_html_e( 'Comprehensive breakdown of file compression, server diagnostics, and activity logs.', 'budi-webp-optimizer' ); ?></p>
 		</div>
 	</div>
 
-	<div class="bwo-report-grid">
+	<div class="bwo-report-grid" style="padding: 0; margin-bottom: 24px;">
 		<div class="bwo-card">
 			<h3 class="bwo-card-title"><?php esc_html_e( 'Storage Performance Summary', 'budi-webp-optimizer' ); ?></h3>
 			<ul class="bwo-report-list">
@@ -64,29 +69,41 @@ $logs    = get_option( 'bwo_recent_logs', array() );
 		</div>
 	</div>
 
-	<!-- Activity Log Table -->
-	<div class="bwo-card bwo-table-card" style="margin-top: 24px;">
-		<h3 class="bwo-card-title" style="padding: 20px 24px 0 24px;"><?php esc_html_e( 'Recent Activity Logs', 'budi-webp-optimizer' ); ?></h3>
+	<!-- Activity Log Table Card -->
+	<div class="bwo-card bwo-table-card">
+		<div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 12px 24px;">
+			<h3 class="bwo-card-title" style="margin: 0;"><?php esc_html_e( 'Recent Activity Logs', 'budi-webp-optimizer' ); ?></h3>
+			<div style="display: flex; gap: 8px;">
+				<button type="button" class="bwo-btn bwo-btn-sm bwo-btn-white" id="bwo-btn-refresh-logs">
+					<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+					<span><?php esc_html_e( 'Refresh', 'budi-webp-optimizer' ); ?></span>
+				</button>
+				<button type="button" class="bwo-btn bwo-btn-sm bwo-btn-white" id="bwo-btn-clear-logs" style="color: #64748b;">
+					<span><?php esc_html_e( 'Clear Logs', 'budi-webp-optimizer' ); ?></span>
+				</button>
+			</div>
+		</div>
+
 		<div class="bwo-table-responsive">
-			<table class="bwo-table">
+			<table class="bwo-table" id="bwo-reports-logs-table">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'Timestamp', 'budi-webp-optimizer' ); ?></th>
-						<th><?php esc_html_e( 'Level', 'budi-webp-optimizer' ); ?></th>
-						<th><?php esc_html_e( 'Message', 'budi-webp-optimizer' ); ?></th>
+						<th style="width: 170px;"><?php esc_html_e( 'Timestamp', 'budi-webp-optimizer' ); ?></th>
+						<th style="width: 90px;"><?php esc_html_e( 'Level', 'budi-webp-optimizer' ); ?></th>
+						<th><?php esc_html_e( 'Activity Event', 'budi-webp-optimizer' ); ?></th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id="bwo-reports-logs-tbody">
 					<?php if ( empty( $logs ) ) : ?>
 						<tr>
-							<td colspan="3" class="bwo-td-empty"><?php esc_html_e( 'No recent activity logs found.', 'budi-webp-optimizer' ); ?></td>
+							<td colspan="3" class="bwo-td-empty"><?php esc_html_e( 'No recent activity logs found. Optimization actions will appear here in real-time.', 'budi-webp-optimizer' ); ?></td>
 						</tr>
 					<?php else : ?>
 						<?php foreach ( array_reverse( $logs ) as $log ) : ?>
 							<tr>
-								<td style="white-space:nowrap;"><?php echo esc_html( BWO_Formatting::format_date( $log['time'] ) ); ?></td>
+								<td style="white-space: nowrap; color: #64748b; font-size: 12px;"><?php echo esc_html( BWO_Formatting::format_date( $log['time'] ) ); ?></td>
 								<td><span class="bwo-badge bwo-badge-<?php echo esc_attr( $log['level'] ); ?>"><?php echo esc_html( strtoupper( $log['level'] ) ); ?></span></td>
-								<td><?php echo esc_html( $log['message'] ); ?></td>
+								<td style="color: #0f172a; font-weight: 500;"><?php echo esc_html( $log['message'] ); ?></td>
 							</tr>
 						<?php endforeach; ?>
 					<?php endif; ?>

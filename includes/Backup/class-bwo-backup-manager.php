@@ -73,6 +73,7 @@ class BWO_Backup_Manager {
 		);
 
 		update_post_meta( $attachment_id, self::META_BACKUP_DATA, $backup_data );
+		BWO_Logger::log( "Original backup created for attachment #{$attachment_id} ({$filename})" );
 		return true;
 	}
 
@@ -101,7 +102,7 @@ class BWO_Backup_Manager {
 	}
 
 	/**
-	 * Delete backup files and metadata.
+	 * Delete backup files and metadata for a specific attachment.
 	 *
 	 * @param int $attachment_id
 	 * @return bool
@@ -121,6 +122,44 @@ class BWO_Backup_Manager {
 		}
 
 		delete_post_meta( $attachment_id, self::META_BACKUP_DATA );
+		BWO_Logger::log( "Deleted original backup for attachment #{$attachment_id}" );
 		return true;
+	}
+
+	/**
+	 * Delete all stored backups across all attachments.
+	 *
+	 * @return int Number of backup metas removed
+	 */
+	public static function delete_all_backups() {
+		global $wpdb;
+
+		$backup_dir = BWO_Utils::get_backup_dir();
+		if ( file_exists( $backup_dir ) ) {
+			$subdirs = glob( trailingslashit( $backup_dir ) . '*', GLOB_ONLYDIR );
+			if ( $subdirs ) {
+				foreach ( $subdirs as $dir ) {
+					$files = glob( trailingslashit( $dir ) . '*' );
+					if ( $files ) {
+						foreach ( $files as $file ) {
+							if ( is_file( $file ) ) {
+								@unlink( $file );
+							}
+						}
+					}
+					@rmdir( $dir );
+				}
+			}
+		}
+
+		$deleted_count = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s",
+				self::META_BACKUP_DATA
+			)
+		);
+
+		BWO_Logger::log( "All original image backups deleted from server storage." );
+		return $deleted_count;
 	}
 }

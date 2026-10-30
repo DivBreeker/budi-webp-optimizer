@@ -1,6 +1,7 @@
 /**
  * BUDI WebP Optimizer - Admin JavaScript
  * Pure vanilla / jQuery lightweight controller.
+ * Version: 1.0.1
  */
 
 (function($) {
@@ -14,29 +15,43 @@
 			status: 'all',
 			selectedIds: [],
 			bulkRunning: false,
-			bulkPaused: false
+			bulkPaused: false,
+			bulkScope: 'all'
 		},
 
 		init: function() {
 			this.bindEvents();
-			this.loadImages();
+			if ($('#bwo-images-table').length) {
+				this.loadImages();
+			}
 			this.updateDonutChart();
 		},
 
 		bindEvents: function() {
 			var self = this;
 
-			// Tab Navigation
-			$('.bwo-tab-btn').on('click', function() {
+			// Tab Navigation (Dashboard)
+			$('.bwo-tab-btn[data-tab]').on('click', function() {
 				var target = $(this).data('tab');
-				$('.bwo-tab-btn').removeClass('active');
+				$('.bwo-tab-btn[data-tab]').removeClass('active');
 				$(this).addClass('active');
 
 				$('.bwo-tab-content').removeClass('active');
 				$('#' + target).addClass('active');
 			});
 
-			// Filter Dropdown Toggle
+			// Dedicated Media Library Filter Tabs
+			$('.bwo-media-filter-btn').on('click', function(e) {
+				e.preventDefault();
+				$('.bwo-media-filter-btn').removeClass('active');
+				$(this).addClass('active');
+
+				self.state.status = $(this).data('status') || 'all';
+				self.state.paged = 1;
+				self.loadImages();
+			});
+
+			// Filter Dropdown Toggle (Dashboard)
 			$('#bwo-btn-filter-toggle').on('click', function(e) {
 				e.stopPropagation();
 				$('#bwo-filter-dropdown').toggle();
@@ -46,7 +61,7 @@
 				$('#bwo-filter-dropdown').hide();
 			});
 
-			// Filter Option Selection
+			// Filter Option Selection (Dashboard)
 			$('.bwo-filter-opt').on('click', function(e) {
 				e.preventDefault();
 				$('.bwo-filter-opt').removeClass('active');
@@ -88,7 +103,9 @@
 
 					if (response.success && response.data.stats) {
 						self.applyStats(response.data.stats);
-						self.loadImages();
+						if ($('#bwo-images-table').length) {
+							self.loadImages();
+						}
 					}
 				}).fail(function() {
 					$icon.removeClass('bwo-spinning');
@@ -119,19 +136,6 @@
 			$('#bwo-btn-convert-all').on('click', function() {
 				if (confirm(bwoData.strings.confirmConvertAll)) {
 					self.startBulkConversion('all');
-				}
-			});
-
-			// Quick Action: Select & Convert
-			$('#bwo-btn-select-convert').on('click', function() {
-				// Switch to Recent Images tab if not on it
-				$('.bwo-tab-btn[data-tab="tab-recent"]').trigger('click');
-				$('html, body').animate({
-					scrollTop: $('.bwo-tabs-container').offset().top - 40
-				}, 400);
-
-				if (self.state.selectedIds.length > 0) {
-					self.startBulkConversion('selected', self.state.selectedIds);
 				}
 			});
 
@@ -175,7 +179,7 @@
 				});
 			});
 
-			// Single Row Action: Restore
+			// Single Row Action: Restore Original
 			$(document).on('click', '.bwo-btn-restore, .bwo-row-restore-btn', function(e) {
 				e.preventDefault();
 				var $btn = $(this);
@@ -194,7 +198,18 @@
 						if (res.data.stats) {
 							self.applyStats(res.data.stats);
 						}
-						self.loadImages();
+						// If on backups page, remove row
+						var $row = $('#bwo-backup-row-' + id);
+						if ($row.length) {
+							$row.fadeOut(200, function() {
+								$(this).remove();
+								if ($('#bwo-backups-tbody tr').length === 0) {
+									$('#bwo-backups-tbody').html('<tr><td colspan="5" class="bwo-td-empty">No backups remaining.</td></tr>');
+								}
+							});
+						} else {
+							self.loadImages();
+						}
 					} else {
 						alert(res.data && res.data.message ? res.data.message : 'Restore error');
 						$btn.prop('disabled', false).text('Restore');
@@ -202,7 +217,99 @@
 				});
 			});
 
-			// Single Row Action: Preview Modal
+			// Delete Single Backup Action
+			$(document).on('click', '.bwo-btn-delete-backup', function(e) {
+				e.preventDefault();
+				var $btn = $(this);
+				var id = $btn.data('id');
+
+				if (!confirm(bwoData.strings.confirmDeleteBackup)) return;
+
+				$btn.prop('disabled', true).text(bwoData.strings.deleting);
+
+				$.post(bwoData.ajaxUrl, {
+					action: 'bwo_delete_backup',
+					attachment_id: id,
+					bwo_nonce: bwoData.nonce
+				}, function(res) {
+					if (res.success) {
+						var $row = $('#bwo-backup-row-' + id);
+						$row.fadeOut(250, function() {
+							$(this).remove();
+							var remaining = $('#bwo-backups-tbody tr').length;
+							if (remaining === 0) {
+								$('#bwo-backups-tbody').html('<tr><td colspan="5" class="bwo-td-empty">No backups found.</td></tr>');
+								$('#bwo-btn-clear-all-backups').hide();
+							}
+							$('#bwo-backup-count-badge').text(remaining + ' Backups');
+						});
+					} else {
+						alert(res.data && res.data.message ? res.data.message : 'Delete failed');
+						$btn.prop('disabled', false).text('Delete Backup');
+					}
+				});
+			});
+
+			// Clear All Backups Action
+			$('#bwo-btn-clear-all-backups').on('click', function(e) {
+				e.preventDefault();
+				if (!confirm(bwoData.strings.confirmClearBackups)) return;
+
+				var $btn = $(this);
+				$btn.prop('disabled', true).text('Clearing...');
+
+				$.post(bwoData.ajaxUrl, {
+					action: 'bwo_clear_all_backups',
+					bwo_nonce: bwoData.nonce
+				}, function(res) {
+					if (res.success) {
+						$('#bwo-backups-tbody').html('<tr><td colspan="5" class="bwo-td-empty">All backups have been removed.</td></tr>');
+						$btn.hide();
+						$('#bwo-backup-count-badge').text('0 Backups');
+					} else {
+						alert('Failed to clear backups');
+						$btn.prop('disabled', false).text('Clear All Backups');
+					}
+				});
+			});
+
+			// Clear Activity Logs
+			$(document).on('click', '#bwo-btn-clear-logs', function(e) {
+				e.preventDefault();
+				if (!confirm(bwoData.strings.confirmClearLogs)) return;
+
+				$.post(bwoData.ajaxUrl, {
+					action: 'bwo_clear_logs',
+					bwo_nonce: bwoData.nonce
+				}, function(res) {
+					if (res.success) {
+						var emptyRow = '<tr><td colspan="3" class="bwo-td-empty">Activity logs cleared.</td></tr>';
+						$('#bwo-dashboard-logs-tbody').html(emptyRow);
+						$('#bwo-reports-logs-tbody').html(emptyRow);
+					}
+				});
+			});
+
+			// Refresh Activity Logs
+			$(document).on('click', '#bwo-btn-refresh-logs', function(e) {
+				e.preventDefault();
+				var $btn = $(this);
+				$btn.prop('disabled', true);
+
+				$.post(bwoData.ajaxUrl, {
+					action: 'bwo_get_logs',
+					bwo_nonce: bwoData.nonce
+				}, function(res) {
+					$btn.prop('disabled', false);
+					if (res.success && res.data && res.data.logs) {
+						self.renderLogs(res.data.logs);
+					}
+				}).fail(function() {
+					$btn.prop('disabled', false);
+				});
+			});
+
+			// Preview Modal Action
 			$(document).on('click', '.bwo-row-preview-btn', function(e) {
 				e.preventDefault();
 				var id = $(this).data('id');
@@ -226,36 +333,61 @@
 				$('#bwo-help-modal').fadeIn(150);
 			});
 
-			// Bulk Modal Controls
-			$('#bwo-btn-bulk-pause').on('click', function() {
+			// Bulk Modal Controls (Modal variant)
+			$('#bwo-btn-bulk-pause, #bwo-btn-page-pause').on('click', function() {
 				if (self.state.bulkPaused) {
 					self.state.bulkPaused = false;
-					$(this).text('Pause');
-					$('#bwo-bulk-status-text').text('Processing...');
+					$('#bwo-btn-bulk-pause, #bwo-btn-page-pause').text('Pause');
+					$('#bwo-bulk-status-text, #bwo-bulk-page-status').text('Processing...');
 					self.runBulkLoop();
 				} else {
 					self.state.bulkPaused = true;
-					$(this).text('Resume');
-					$('#bwo-bulk-status-text').text('Paused by user');
+					$('#bwo-btn-bulk-pause, #bwo-btn-page-pause').text('Resume');
+					$('#bwo-bulk-status-text, #bwo-bulk-page-status').text('Paused by user');
 				}
 			});
 
-			$('#bwo-btn-bulk-cancel, #bwo-bulk-close-btn').on('click', function() {
+			$('#bwo-btn-bulk-cancel, #bwo-btn-page-cancel, #bwo-bulk-close-btn').on('click', function() {
 				self.state.bulkRunning = false;
 				$.post(bwoData.ajaxUrl, {
 					action: 'bwo_cancel_bulk',
 					bwo_nonce: bwoData.nonce
 				});
 				$('#bwo-bulk-modal').fadeOut(150);
-				self.loadImages();
+				$('#bwo-btn-page-pause, #bwo-btn-page-cancel').hide();
+				$('#bwo-bulk-page-status').text('Cancelled');
+				if ($('#bwo-images-table').length) {
+					self.loadImages();
+				}
 			});
 
 			$('#bwo-btn-bulk-finish').on('click', function() {
 				$('#bwo-bulk-modal').fadeOut(150);
-				self.loadImages();
+				if ($('#bwo-images-table').length) {
+					self.loadImages();
+				}
 			});
 
-			// Pagination
+			// Dedicated Bulk Convert Page: Trigger Button
+			$('#bwo-btn-trigger-bulk').on('click', function() {
+				var scope = $('input[name="bulk_scope"]:checked').val() || 'all';
+				var customQuality = $('#bwo-quality-slider').val();
+				var customBackup  = $('#bwo-bulk-keep-backup').is(':checked') ? 1 : 0;
+
+				// Save settings first if user changed quality or backup toggle
+				$.post(bwoData.ajaxUrl, {
+					action: 'bwo_save_settings',
+					settings: {
+						quality: customQuality,
+						keep_backup: customBackup
+					},
+					bwo_nonce: bwoData.nonce
+				}, function() {
+					self.startBulkConversion(scope, null, true);
+				});
+			});
+
+			// Pagination Controls
 			$('#bwo-pg-prev').on('click', function() {
 				if (self.state.paged > 1) {
 					self.state.paged--;
@@ -268,54 +400,71 @@
 				self.loadImages();
 			});
 
-			// Radio Card Selection
-			$('.bwo-radio-card input').on('change', function() {
-				$('.bwo-radio-card').removeClass('selected');
-				$(this).closest('.bwo-radio-card').addClass('selected');
+			// Radio Card Click Selection
+			$(document).on('click', '.bwo-radio-card', function() {
+				var $card = $(this);
+				var $radio = $card.find('input[type="radio"]');
+				var groupName = $radio.attr('name');
+
+				$('input[name="' + groupName + '"]').closest('.bwo-radio-card').removeClass('selected');
+				$card.addClass('selected');
+				$radio.prop('checked', true).trigger('change');
 			});
 
-			// Quality Slider
-			$('#bwo-quality-slider, #bwo-quality-slider-2').on('input', function() {
+			// Quality Slider Events
+			$('#bwo-quality-slider, #bwo-quality-slider-2').on('input change', function() {
 				var val = $(this).val();
 				$('#bwo-quality-display, #bwo-quality-display-2').text(val + '%');
+
+				$('.bwo-tick-btn').removeClass('active');
+				$('.bwo-tick-btn[data-val="' + val + '"]').addClass('active');
 			});
 
 			$('.bwo-tick-btn').on('click', function() {
 				var val = $(this).data('val');
 				$('.bwo-tick-btn').removeClass('active');
 				$(this).addClass('active');
-				$('#bwo-quality-slider').val(val).trigger('input');
+				$('#bwo-quality-slider, #bwo-quality-slider-2').val(val).trigger('input');
 			});
 
-			// Settings Form Submit
+			// Settings Form Submit Handler
 			$('#bwo-settings-form, #bwo-standalone-settings-form').on('submit', function(e) {
 				e.preventDefault();
 				var $form = $(this);
-				var formData = $form.serializeArray();
-				var settingsObj = {};
+				var $status = $form.find('.bwo-save-status, #bwo-standalone-save-status');
 
-				$.each(formData, function(i, field) {
-					settingsObj[field.name] = field.value;
-				});
+				// Gather values cleanly
+				var qualityVal = $form.find('input[name="quality"]').val() || 85;
+				var modeVal    = $form.find('input[name="conversion_mode"]:checked').val() || 'keep';
+				var backupVal  = $form.find('input[name="keep_backup"]').is(':checked') ? 1 : 0;
+				var autoVal    = $form.find('input[name="auto_convert"]').is(':checked') ? 1 : 0;
+				var thumbsVal  = $form.find('input[name="convert_thumbnails"]').is(':checked') ? 1 : 0;
+				var batchVal   = $form.find('select[name="batch_size"]').val() || 5;
+				var debugVal   = $form.find('input[name="debug_log"]').is(':checked') ? 1 : 0;
 
-				// Include unchecked checkboxes
-				if (!settingsObj.keep_backup) settingsObj.keep_backup = 0;
-				if (!settingsObj.auto_convert) settingsObj.auto_convert = 0;
-				if (!settingsObj.convert_thumbnails) settingsObj.convert_thumbnails = 0;
+				var settingsObj = {
+					quality: qualityVal,
+					conversion_mode: modeVal,
+					keep_backup: backupVal,
+					auto_convert: autoVal,
+					convert_thumbnails: thumbsVal,
+					batch_size: batchVal,
+					debug_log: debugVal
+				};
 
-				var $status = $form.find('.bwo-save-status');
-				$status.text('Saving...');
+				$status.text('Saving...').fadeIn();
 
 				$.post(bwoData.ajaxUrl, {
 					action: 'bwo_save_settings',
 					settings: settingsObj,
 					bwo_nonce: bwoData.nonce
 				}, function(res) {
-					if (res.success) {
-						$status.text(bwoData.strings.settingsSaved).fadeIn();
+					if (res.success && res.data && res.data.settings) {
+						bwoData.settings = res.data.settings;
+						$status.text(bwoData.strings.settingsSaved);
 						setTimeout(function() {
-							$status.fadeOut();
-						}, 3000);
+							$status.fadeOut(300);
+						}, 3500);
 					}
 				});
 			});
@@ -339,7 +488,7 @@
 		loadImages: function() {
 			var self = this;
 			var $tbody = $('#bwo-table-body');
-			$tbody.html('<tr><td colspan="8" class="bwo-td-loading"><div class="bwo-spinner"></div><span>Loading...</span></td></tr>');
+			$tbody.html('<tr><td colspan="8" class="bwo-td-loading"><div class="bwo-spinner"></div><span>Loading images...</span></td></tr>');
 
 			$.post(bwoData.ajaxUrl, {
 				action: 'bwo_get_images',
@@ -352,10 +501,10 @@
 				if (res.success && res.data) {
 					self.renderTable(res.data);
 				} else {
-					$tbody.html('<tr><td colspan="8" class="bwo-td-empty">Error loading images</td></tr>');
+					$tbody.html('<tr><td colspan="8" class="bwo-td-empty">Error loading images.</td></tr>');
 				}
 			}).fail(function() {
-				$tbody.html('<tr><td colspan="8" class="bwo-td-empty">Failed to communicate with server</td></tr>');
+				$tbody.html('<tr><td colspan="8" class="bwo-td-empty">Failed to communicate with server.</td></tr>');
 			});
 		},
 
@@ -364,7 +513,7 @@
 			var $tbody = $('#bwo-table-body');
 
 			if (items.length === 0) {
-				$tbody.html('<tr><td colspan="8" class="bwo-td-empty">No images found matching your filter.</td></tr>');
+				$tbody.html('<tr><td colspan="8" class="bwo-td-empty">No images found matching your filter criteria.</td></tr>');
 				$('#bwo-pagination').hide();
 				return;
 			}
@@ -416,6 +565,24 @@
 			// Clear select all header check
 			$('#bwo-select-all').prop('checked', false);
 			this.updateSelection();
+		},
+
+		renderLogs: function(logs) {
+			var html = '';
+			if (!logs || logs.length === 0) {
+				html = '<tr><td colspan="3" class="bwo-td-empty">No activity logs recorded yet.</td></tr>';
+			} else {
+				$.each(logs, function(i, log) {
+					html += '<tr>';
+					html += '<td style="white-space: nowrap; color: #64748b; font-size: 12px;">' + log.time + '</td>';
+					html += '<td><span class="bwo-badge bwo-badge-' + log.level.toLowerCase() + '">' + log.level + '</span></td>';
+					html += '<td style="color: #0f172a; font-weight: 500;">' + log.message + '</td>';
+					html += '</tr>';
+				});
+			}
+
+			$('#bwo-dashboard-logs-tbody').html(html);
+			$('#bwo-reports-logs-tbody').html(html);
 		},
 
 		applyStats: function(stats) {
@@ -478,8 +645,10 @@
 			});
 		},
 
-		startBulkConversion: function(mode, ids) {
+		startBulkConversion: function(mode, ids, isPageInline) {
 			var self = this;
+			self.state.bulkScope = mode;
+
 			var postData = {
 				action: 'bwo_start_bulk',
 				mode: mode,
@@ -489,27 +658,37 @@
 				postData.ids = ids;
 			}
 
-			$('#bwo-bulk-modal').fadeIn(150);
-			$('#bwo-bulk-pct-display').text('0%');
-			$('#bwo-bulk-progress-bar').css('width', '0%');
-			$('#bwo-bulk-status-text').text('Queueing attachments...');
-			$('#bwo-btn-bulk-pause').show().text('Pause');
-			$('#bwo-btn-bulk-cancel').show();
-			$('#bwo-btn-bulk-finish').hide();
+			if (!isPageInline) {
+				$('#bwo-bulk-modal').fadeIn(150);
+				$('#bwo-bulk-pct-display').text('0%');
+				$('#bwo-bulk-progress-bar').css('width', '0%');
+				$('#bwo-bulk-status-text').text('Queueing attachments...');
+				$('#bwo-btn-bulk-pause').show().text('Pause');
+				$('#bwo-btn-bulk-cancel').show();
+				$('#bwo-btn-bulk-finish').hide();
+			} else {
+				$('#bwo-bulk-page-pct').text('0%');
+				$('#bwo-bulk-page-bar').css('width', '0%');
+				$('#bwo-bulk-page-status').text('Queueing attachments...');
+				$('#bwo-btn-page-pause, #bwo-btn-page-cancel').show();
+				$('#bwo-btn-trigger-bulk').prop('disabled', true);
+			}
 
 			$.post(bwoData.ajaxUrl, postData, function(res) {
 				if (res.success && res.data.queue) {
 					self.state.bulkRunning = true;
 					self.state.bulkPaused = false;
-					self.runBulkLoop();
+					self.runBulkLoop(isPageInline);
 				} else {
 					alert(res.data && res.data.message ? res.data.message : 'Failed to start bulk conversion');
-					$('#bwo-bulk-modal').fadeOut(150);
+					if (!isPageInline) {
+						$('#bwo-bulk-modal').fadeOut(150);
+					}
 				}
 			});
 		},
 
-		runBulkLoop: function() {
+		runBulkLoop: function(isPageInline) {
 			var self = this;
 			if (!self.state.bulkRunning || self.state.bulkPaused) return;
 
@@ -525,38 +704,49 @@
 
 				var d = res.data;
 				var pct = d.percent || 0;
+
+				// Modal updates
 				$('#bwo-bulk-pct-display').text(pct + '%');
 				$('#bwo-bulk-progress-bar').css('width', pct + '%');
 				$('#bwo-bulk-processed-count').text(d.processed + ' / ' + d.total);
 				$('#bwo-bulk-success-count').text(d.successful);
 				$('#bwo-bulk-fail-count').text(d.failed);
 
+				// Page inline updates
+				$('#bwo-bulk-page-pct').text(pct + '%');
+				$('#bwo-bulk-page-bar').css('width', pct + '%');
+				$('#bwo-bulk-page-processed').text(d.processed + ' / ' + d.total);
+				$('#bwo-bulk-page-success').text(d.successful);
+				$('#bwo-bulk-page-failed').text(d.failed);
+
 				if (d.current_item) {
-					$('#bwo-bulk-current-filename').text(d.current_item);
+					$('#bwo-bulk-current-filename, #bwo-bulk-page-current').text(d.current_item);
 				}
 
 				if (d.completed) {
 					self.state.bulkRunning = false;
-					$('#bwo-bulk-status-text').text('All images processed successfully!');
-					$('#bwo-btn-bulk-pause').hide();
-					$('#bwo-btn-bulk-cancel').hide();
+					$('#bwo-bulk-status-text, #bwo-bulk-page-status').text('All images processed successfully!');
+					$('#bwo-btn-bulk-pause, #bwo-btn-page-pause').hide();
+					$('#bwo-btn-bulk-cancel, #bwo-btn-page-cancel').hide();
 					$('#bwo-btn-bulk-finish').fadeIn();
+					$('#bwo-btn-trigger-bulk').prop('disabled', false);
 
 					if (d.stats) {
 						self.applyStats(d.stats);
 					}
+					if ($('#bwo-images-table').length) {
+						self.loadImages();
+					}
 				} else {
-					$('#bwo-bulk-status-text').text('Converting batch in background...');
-					// Continue next batch
+					$('#bwo-bulk-status-text, #bwo-bulk-page-status').text('Converting batch in background...');
 					setTimeout(function() {
-						self.runBulkLoop();
+						self.runBulkLoop(isPageInline);
 					}, 200);
 				}
 			}).fail(function() {
-				// Retry on transient failure
 				if (self.state.bulkRunning && !self.state.bulkPaused) {
 					setTimeout(function() {
-						self.runBulkLoop();
+						self.runBulkLoop(isPageInline);
 					}, 1000);
 				}
 			});

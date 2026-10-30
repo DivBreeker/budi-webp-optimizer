@@ -96,7 +96,7 @@ class BWO_Admin_Menu {
 	}
 
 	public static function render_bulk_convert_page() {
-		require_once BWO_PLUGIN_DIR . 'templates/dashboard.php';
+		require_once BWO_PLUGIN_DIR . 'templates/bulk-convert.php';
 	}
 
 	public static function render_settings_page() {

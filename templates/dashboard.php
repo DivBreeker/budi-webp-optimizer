@@ -9,9 +9,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$summary = BWO_Media_Scanner::get_summary_stats();
-$server  = BWO_Server_Check::get_report();
+$summary  = BWO_Media_Scanner::get_summary_stats();
+$server   = BWO_Server_Check::get_report();
 $settings = BWO_Settings::get_settings();
+$logs     = BWO_Logger::get_logs();
 ?>
 
 <div class="bwo-wrap">
@@ -188,15 +189,15 @@ $settings = BWO_Settings::get_settings();
 				</button>
 
 				<!-- Select & Convert Button Card -->
-				<button type="button" class="bwo-action-btn-white" id="bwo-btn-select-convert">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=bwo-media-library' ) ); ?>" class="bwo-action-btn-white" id="bwo-btn-select-convert" style="text-decoration: none;">
 					<div class="bwo-btn-icon-box">
 						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>
 					</div>
 					<div class="bwo-action-btn-text">
 						<strong class="bwo-btn-headline-dark"><?php esc_html_e( 'Select & Convert', 'budi-webp-optimizer' ); ?></strong>
-						<span class="bwo-btn-subline-dark"><?php esc_html_e( 'Choose specific images to convert', 'budi-webp-optimizer' ); ?></span>
+						<span class="bwo-btn-subline-dark"><?php esc_html_e( 'Choose specific images to convert in Media Library', 'budi-webp-optimizer' ); ?></span>
 					</div>
-				</button>
+				</a>
 			</div>
 		</div>
 	</div>
@@ -215,7 +216,7 @@ $settings = BWO_Settings::get_settings();
 				</button>
 				<button type="button" class="bwo-tab-btn" data-tab="tab-reports">
 					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-					<span><?php esc_html_e( 'Storage Report', 'budi-webp-optimizer' ); ?></span>
+					<span><?php esc_html_e( 'Storage & Activity Report', 'budi-webp-optimizer' ); ?></span>
 				</button>
 			</nav>
 
@@ -274,7 +275,6 @@ $settings = BWO_Settings::get_settings();
 						</tr>
 					</thead>
 					<tbody id="bwo-table-body">
-						<!-- Loaded via AJAX -->
 						<tr>
 							<td colspan="8" class="bwo-td-loading">
 								<div class="bwo-spinner"></div>
@@ -339,12 +339,12 @@ $settings = BWO_Settings::get_settings();
 							<span class="bwo-slider-val-badge" id="bwo-quality-display"><?php echo esc_html( $settings['quality'] ); ?>%</span>
 						</div>
 
-						<input type="range" id="bwo-quality-slider" min="50" max="100" value="<?php echo esc_attr( $settings['quality'] ); ?>" class="bwo-range-slider" />
+						<input type="range" name="quality" id="bwo-quality-slider" min="50" max="100" value="<?php echo esc_attr( $settings['quality'] ); ?>" class="bwo-range-slider" />
 						
 						<div class="bwo-slider-ticks">
-							<span class="bwo-tick-btn" data-val="75"><?php esc_html_e( 'Smaller file (75%)', 'budi-webp-optimizer' ); ?></span>
-							<span class="bwo-tick-btn active" data-val="85"><?php esc_html_e( 'Balanced (85%)', 'budi-webp-optimizer' ); ?></span>
-							<span class="bwo-tick-btn" data-val="96"><?php esc_html_e( 'Highest quality (96%)', 'budi-webp-optimizer' ); ?></span>
+							<span class="bwo-tick-btn <?php echo 75 === (int)$settings['quality'] ? 'active' : ''; ?>" data-val="75"><?php esc_html_e( 'Smaller file (75%)', 'budi-webp-optimizer' ); ?></span>
+							<span class="bwo-tick-btn <?php echo 85 === (int)$settings['quality'] ? 'active' : ''; ?>" data-val="85"><?php esc_html_e( 'Balanced (85%)', 'budi-webp-optimizer' ); ?></span>
+							<span class="bwo-tick-btn <?php echo 96 === (int)$settings['quality'] ? 'active' : ''; ?>" data-val="96"><?php esc_html_e( 'Highest quality (96%)', 'budi-webp-optimizer' ); ?></span>
 						</div>
 					</div>
 
@@ -356,7 +356,7 @@ $settings = BWO_Settings::get_settings();
 							<input type="checkbox" name="keep_backup" value="1" <?php checked( $settings['keep_backup'], 1 ); ?> />
 							<div>
 								<strong><?php esc_html_e( 'Keep a recoverable backup of original files', 'budi-webp-optimizer' ); ?></strong>
-								<span><?php esc_html_e( 'Safely stores untouched JPG/PNG copies in a protected folder for instant 1-click restore.', 'budi-webp-optimizer' ); ?></span>
+								<span><?php esc_html_e( 'Safely stores untouched JPG/PNG copies in a protected folder for instant 1-click restore. Uncheck if you do NOT want backups saved on your server.', 'budi-webp-optimizer' ); ?></span>
 							</div>
 						</label>
 
@@ -387,7 +387,7 @@ $settings = BWO_Settings::get_settings();
 			</div>
 		</div>
 
-		<!-- Tab 3: Storage Report -->
+		<!-- Tab 3: Storage & Activity Report -->
 		<div class="bwo-tab-content" id="tab-reports">
 			<div class="bwo-reports-box">
 				<div class="bwo-report-grid">
@@ -413,6 +413,49 @@ $settings = BWO_Settings::get_settings();
 							<li><span><?php esc_html_e( 'Total Disk Space Saved:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( $summary['storage_saved_f'] ); ?></strong></li>
 							<li><span><?php esc_html_e( 'Average Size Reduction:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( $summary['reduction_label'] ); ?></strong></li>
 						</ul>
+					</div>
+				</div>
+
+				<!-- Activity Logs Section -->
+				<div class="bwo-card bwo-table-card" style="margin: 0 24px 24px 24px; border: 1px solid #e2e8f0;">
+					<div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px 12px 24px;">
+						<h3 class="bwo-card-title" style="margin: 0;"><?php esc_html_e( 'Recent Activity Logs', 'budi-webp-optimizer' ); ?></h3>
+						<div style="display: flex; gap: 8px;">
+							<button type="button" class="bwo-btn bwo-btn-sm bwo-btn-white" id="bwo-btn-refresh-logs">
+								<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+								<span><?php esc_html_e( 'Refresh', 'budi-webp-optimizer' ); ?></span>
+							</button>
+							<button type="button" class="bwo-btn bwo-btn-sm bwo-btn-white" id="bwo-btn-clear-logs" style="color: #64748b;">
+								<span><?php esc_html_e( 'Clear Logs', 'budi-webp-optimizer' ); ?></span>
+							</button>
+						</div>
+					</div>
+
+					<div class="bwo-table-responsive">
+						<table class="bwo-table" id="bwo-dashboard-logs-table">
+							<thead>
+								<tr>
+									<th style="width: 170px;"><?php esc_html_e( 'Timestamp', 'budi-webp-optimizer' ); ?></th>
+									<th style="width: 90px;"><?php esc_html_e( 'Level', 'budi-webp-optimizer' ); ?></th>
+									<th><?php esc_html_e( 'Activity Event', 'budi-webp-optimizer' ); ?></th>
+								</tr>
+							</thead>
+							<tbody id="bwo-dashboard-logs-tbody">
+								<?php if ( empty( $logs ) ) : ?>
+									<tr>
+										<td colspan="3" class="bwo-td-empty"><?php esc_html_e( 'No activity logged yet. Conversion and optimization events will appear here.', 'budi-webp-optimizer' ); ?></td>
+									</tr>
+								<?php else : ?>
+									<?php foreach ( array_reverse( $logs ) as $log ) : ?>
+										<tr>
+											<td style="white-space: nowrap; color: #64748b; font-size: 12px;"><?php echo esc_html( BWO_Formatting::format_date( $log['time'] ) ); ?></td>
+											<td><span class="bwo-badge bwo-badge-<?php echo esc_attr( $log['level'] ); ?>"><?php echo esc_html( strtoupper( $log['level'] ) ); ?></span></td>
+											<td style="color: #0f172a; font-weight: 500;"><?php echo esc_html( $log['message'] ); ?></td>
+										</tr>
+									<?php endforeach; ?>
+								<?php endif; ?>
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
@@ -521,6 +564,9 @@ $settings = BWO_Settings::get_settings();
 			<h4><?php esc_html_e( 'Conversion Modes Explained', 'budi-webp-optimizer' ); ?></h4>
 			<p><strong><?php esc_html_e( 'Keep Original:', 'budi-webp-optimizer' ); ?></strong> <?php esc_html_e( 'Creates WebP images side-by-side with your original JPG/PNG files without modifying any existing references.', 'budi-webp-optimizer' ); ?></p>
 			<p><strong><?php esc_html_e( 'Replace Original:', 'budi-webp-optimizer' ); ?></strong> <?php esc_html_e( 'Replaces the attachment file directly with WebP, saving maximum disk space. An untouched original backup is preserved for effortless 1-click restore.', 'budi-webp-optimizer' ); ?></p>
+
+			<h4><?php esc_html_e( 'Recoverable Backups', 'budi-webp-optimizer' ); ?></h4>
+			<p><?php esc_html_e( 'When "Keep a recoverable backup of original files" is checked, original files are stored in a protected folder before conversion. If unchecked, no original backup is saved, freeing up server disk storage immediately.', 'budi-webp-optimizer' ); ?></p>
 		</div>
 		<div class="bwo-modal-footer">
 			<button type="button" class="bwo-btn bwo-btn-white" data-close-modal><?php esc_html_e( 'Got it', 'budi-webp-optimizer' ); ?></button>

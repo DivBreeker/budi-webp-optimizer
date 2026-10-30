@@ -28,6 +28,9 @@ class BWO_Settings {
 
 	public static function get_settings() {
 		$saved = get_option( self::OPTION_NAME, array() );
+		if ( ! is_array( $saved ) ) {
+			$saved = array();
+		}
 		return wp_parse_args( $saved, self::get_defaults() );
 	}
 
@@ -37,10 +40,10 @@ class BWO_Settings {
 	}
 
 	public static function update_settings( $new_settings ) {
-		$current  = self::get_settings();
+		$current   = self::get_settings();
 		$sanitized = array();
 
-		if ( isset( $new_settings['quality'] ) ) {
+		if ( isset( $new_settings['quality'] ) && is_numeric( $new_settings['quality'] ) ) {
 			$sanitized['quality'] = BWO_Quality::sanitize( $new_settings['quality'] );
 		} else {
 			$sanitized['quality'] = $current['quality'];
@@ -65,6 +68,18 @@ class BWO_Settings {
 		}
 
 		update_option( self::OPTION_NAME, $sanitized );
+
+		BWO_Logger::log(
+			sprintf(
+				'Configuration saved: Mode=%s, Quality=%d%%, Backup=%s, AutoConvert=%s',
+				strtoupper( $sanitized['conversion_mode'] ),
+				$sanitized['quality'],
+				$sanitized['keep_backup'] ? 'Enabled' : 'Disabled',
+				$sanitized['auto_convert'] ? 'Enabled' : 'Disabled'
+			),
+			'info'
+		);
+
 		return $sanitized;
 	}
 }

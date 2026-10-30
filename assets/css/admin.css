@@ -1380,5 +1380,6 @@
 }
 
 .bwo-badge-info { background: #eff6ff; color: #1d4ed8; }
+.bwo-badge-success { background: #dcfce7; color: #15803d; }
 .bwo-badge-warning { background: #fffbeb; color: #b45309; }
 .bwo-badge-error { background: #fef2f2; color: #b91c1c; }

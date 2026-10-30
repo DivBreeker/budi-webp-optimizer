@@ -20,11 +20,15 @@ class BWO_Admin {
 		add_action( 'wp_ajax_bwo_get_images', array( __CLASS__, 'ajax_get_images' ) );
 		add_action( 'wp_ajax_bwo_convert_single', array( __CLASS__, 'ajax_convert_single' ) );
 		add_action( 'wp_ajax_bwo_restore_single', array( __CLASS__, 'ajax_restore_single' ) );
+		add_action( 'wp_ajax_bwo_delete_backup', array( __CLASS__, 'ajax_delete_backup' ) );
+		add_action( 'wp_ajax_bwo_clear_all_backups', array( __CLASS__, 'ajax_clear_all_backups' ) );
 		add_action( 'wp_ajax_bwo_start_bulk', array( __CLASS__, 'ajax_start_bulk' ) );
 		add_action( 'wp_ajax_bwo_process_batch', array( __CLASS__, 'ajax_process_batch' ) );
 		add_action( 'wp_ajax_bwo_cancel_bulk', array( __CLASS__, 'ajax_cancel_bulk' ) );
 		add_action( 'wp_ajax_bwo_save_settings', array( __CLASS__, 'ajax_save_settings' ) );
 		add_action( 'wp_ajax_bwo_get_preview', array( __CLASS__, 'ajax_get_preview' ) );
+		add_action( 'wp_ajax_bwo_clear_logs', array( __CLASS__, 'ajax_clear_logs' ) );
+		add_action( 'wp_ajax_bwo_get_logs', array( __CLASS__, 'ajax_get_logs' ) );
 
 		// Auto convert on upload if setting enabled
 		add_filter( 'wp_generate_attachment_metadata', array( __CLASS__, 'handle_auto_convert_on_upload' ), 10, 2 );
@@ -40,7 +44,6 @@ class BWO_Admin {
 	 * @param string $hook
 	 */
 	public static function enqueue_assets( $hook ) {
-		// Check if we are on one of our pages
 		$plugin_pages = array(
 			'toplevel_page_budi-webp-optimizer',
 			'webp-optimizer_page_bwo-media-library',
@@ -69,7 +72,7 @@ class BWO_Admin {
 			true
 		);
 
-		$summary = BWO_Media_Scanner::get_summary_stats();
+		$summary  = BWO_Media_Scanner::get_summary_stats();
 		$settings = BWO_Settings::get_settings();
 		$server   = BWO_Server_Check::get_report();
 
@@ -77,20 +80,24 @@ class BWO_Admin {
 			'bwo-admin-js',
 			'bwoData',
 			array(
-				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-				'nonce'     => BWO_Nonce::create(),
-				'stats'     => $summary,
-				'settings'  => $settings,
-				'server'    => $server,
-				'strings'   => array(
-					'confirmConvertAll' => __( 'Are you sure you want to convert all eligible images to WebP? This will process in the background.', 'budi-webp-optimizer' ),
-					'confirmRestore'    => __( 'Are you sure you want to restore the original image?', 'budi-webp-optimizer' ),
-					'converting'        => __( 'Converting...', 'budi-webp-optimizer' ),
-					'restoring'         => __( 'Restoring...', 'budi-webp-optimizer' ),
-					'success'           => __( 'Success', 'budi-webp-optimizer' ),
-					'failed'            => __( 'Failed', 'budi-webp-optimizer' ),
-					'scanning'          => __( 'Scanning Media Library...', 'budi-webp-optimizer' ),
-					'settingsSaved'     => __( 'Settings saved successfully!', 'budi-webp-optimizer' ),
+				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+				'nonce'    => BWO_Nonce::create(),
+				'stats'    => $summary,
+				'settings' => $settings,
+				'server'   => $server,
+				'strings'  => array(
+					'confirmConvertAll'   => __( 'Are you sure you want to convert all eligible images to WebP? This will process in the background.', 'budi-webp-optimizer' ),
+					'confirmRestore'      => __( 'Are you sure you want to restore this image from backup?', 'budi-webp-optimizer' ),
+					'confirmDeleteBackup' => __( 'Are you sure you want to delete this backup file? This action cannot be undone.', 'budi-webp-optimizer' ),
+					'confirmClearBackups' => __( 'Are you sure you want to delete ALL original backups from the server? This will free disk space but you will no longer be able to restore original images.', 'budi-webp-optimizer' ),
+					'confirmClearLogs'    => __( 'Are you sure you want to clear all activity logs?', 'budi-webp-optimizer' ),
+					'converting'          => __( 'Converting...', 'budi-webp-optimizer' ),
+					'restoring'           => __( 'Restoring...', 'budi-webp-optimizer' ),
+					'deleting'            => __( 'Deleting...', 'budi-webp-optimizer' ),
+					'success'             => __( 'Success', 'budi-webp-optimizer' ),
+					'failed'              => __( 'Failed', 'budi-webp-optimizer' ),
+					'scanning'            => __( 'Scanning Media Library...', 'budi-webp-optimizer' ),
+					'settingsSaved'       => __( 'Settings saved successfully!', 'budi-webp-optimizer' ),
 				),
 			)
 		);
@@ -104,6 +111,16 @@ class BWO_Admin {
 		BWO_Nonce::verify_or_die();
 
 		$stats = BWO_Media_Scanner::get_summary_stats( true );
+		BWO_Logger::log(
+			sprintf(
+				'Media Library scanned: %d total, %d converted, %d pending, %s saved',
+				$stats['total_images'],
+				$stats['converted_images'],
+				$stats['pending_images'],
+				$stats['storage_saved_f']
+			)
+		);
+
 		wp_send_json_success( array( 'stats' => $stats ) );
 	}
 
@@ -187,13 +204,54 @@ class BWO_Admin {
 	}
 
 	/**
+	 * AJAX: Delete backup of a single attachment.
+	 */
+	public static function ajax_delete_backup() {
+		BWO_Permissions::verify_or_die();
+		BWO_Nonce::verify_or_die();
+
+		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
+		if ( ! $attachment_id ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid attachment ID.', 'budi-webp-optimizer' ) ) );
+		}
+
+		$deleted = BWO_Backup_Manager::delete_backup( $attachment_id );
+		if ( $deleted ) {
+			wp_send_json_success(
+				array(
+					'message' => __( 'Backup deleted successfully.', 'budi-webp-optimizer' ),
+					'stats'   => BWO_Media_Scanner::get_summary_stats( true ),
+				)
+			);
+		} else {
+			wp_send_json_error( array( 'message' => __( 'Failed to delete backup file.', 'budi-webp-optimizer' ) ) );
+		}
+	}
+
+	/**
+	 * AJAX: Clear all backups from server.
+	 */
+	public static function ajax_clear_all_backups() {
+		BWO_Permissions::verify_or_die();
+		BWO_Nonce::verify_or_die();
+
+		$count = BWO_Backup_Manager::delete_all_backups();
+		wp_send_json_success(
+			array(
+				'message' => sprintf( __( 'All original backups removed (%d records cleared).', 'budi-webp-optimizer' ), $count ),
+				'stats'   => BWO_Media_Scanner::get_summary_stats( true ),
+			)
+		);
+	}
+
+	/**
 	 * AJAX: Start bulk conversion.
 	 */
 	public static function ajax_start_bulk() {
 		BWO_Permissions::verify_or_die();
 		BWO_Nonce::verify_or_die();
 
-		$mode = isset( $_POST['mode'] ) ? sanitize_key( $_POST['mode'] ) : 'all'; // 'all', 'selected', 'pending_only'
+		$mode = isset( $_POST['mode'] ) ? sanitize_key( $_POST['mode'] ) : 'all'; // 'all', 'selected', 'pending_only', 'failed_only'
 		$ids  = array();
 
 		if ( 'selected' === $mode && ! empty( $_POST['ids'] ) && is_array( $_POST['ids'] ) ) {
@@ -207,6 +265,8 @@ class BWO_Admin {
 		}
 
 		$queue_state = BWO_Job_Queue::initialize_queue( $ids );
+		BWO_Logger::log( sprintf( 'Started bulk WebP conversion queue with %d images (Scope: %s)', count( $ids ), strtoupper( $mode ) ) );
+
 		wp_send_json_success(
 			array(
 				'message' => sprintf( __( 'Queued %d images for conversion.', 'budi-webp-optimizer' ), count( $ids ) ),
@@ -228,6 +288,15 @@ class BWO_Admin {
 
 		if ( ! empty( $progress['completed'] ) ) {
 			$progress['stats'] = BWO_Media_Scanner::get_summary_stats( true );
+			BWO_Logger::log(
+				sprintf(
+					'Bulk WebP conversion completed: %d total, %d successful, %d failed',
+					$progress['total'],
+					$progress['successful'],
+					$progress['failed']
+				),
+				$progress['failed'] > 0 ? 'warning' : 'success'
+			);
 		}
 
 		wp_send_json_success( $progress );
@@ -241,6 +310,7 @@ class BWO_Admin {
 		BWO_Nonce::verify_or_die();
 
 		BWO_Job_Queue::cancel_queue();
+		BWO_Logger::log( 'Bulk conversion queue was cancelled by user.', 'warning' );
 		wp_send_json_success( array( 'message' => __( 'Bulk conversion cancelled.', 'budi-webp-optimizer' ) ) );
 	}
 
@@ -303,6 +373,39 @@ class BWO_Admin {
 				'savings'       => $attachment->savings_percent > 0 ? round( $attachment->savings_percent ) . '%' : '—',
 			)
 		);
+	}
+
+	/**
+	 * AJAX: Clear activity logs.
+	 */
+	public static function ajax_clear_logs() {
+		BWO_Permissions::verify_or_die();
+		BWO_Nonce::verify_or_die();
+
+		BWO_Logger::clear_logs();
+		BWO_Logger::log( 'Activity logs cleared by user.' );
+
+		wp_send_json_success( array( 'message' => __( 'Logs cleared.', 'budi-webp-optimizer' ) ) );
+	}
+
+	/**
+	 * AJAX: Fetch recent activity logs.
+	 */
+	public static function ajax_get_logs() {
+		BWO_Permissions::verify_or_die();
+		BWO_Nonce::verify_or_die();
+
+		$logs = BWO_Logger::get_logs();
+		$formatted = array();
+		foreach ( array_reverse( $logs ) as $log ) {
+			$formatted[] = array(
+				'time'    => BWO_Formatting::format_date( $log['time'] ),
+				'level'   => strtoupper( $log['level'] ),
+				'message' => $log['message'],
+			);
+		}
+
+		wp_send_json_success( array( 'logs' => $formatted ) );
 	}
 
 	/**

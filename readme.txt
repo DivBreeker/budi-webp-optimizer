@@ -4,7 +4,7 @@ Tags: webp, image optimizer, speed, performance, compression, media library
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,6 +36,15 @@ Convert your existing JPEG and PNG media library to modern, lightweight WebP for
 3. Navigate to **WebP Optimizer > Dashboard** to review server compatibility and optimize your images.
 
 == Changelog ==
+
+= 1.0.1 =
+* Added Delete Backup feature to permanently remove backups and reclaim server disk space.
+* Added Clear All Backups option for full backup cleanup.
+* Dedicated Media Library Optimizer screen with search, status filters, and bulk actions.
+* Dedicated Bulk Conversion screen with scope selection (All, Pending Only, Retry Failed).
+* Fixed live Activity Logs display on Dashboard and Reports screens.
+* Enhanced settings form persistence for WebP quality slider and backup toggle.
+* Fixed backup creation checkmark behavior so unchecking strictly prevents backup storage.
 
 = 1.0.0 =
 * Initial official release by BUDI Studio.

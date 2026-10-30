@@ -24,15 +24,7 @@ class BWO_Converter {
 
 		$settings = wp_parse_args(
 			$override_options,
-			get_option(
-				'bwo_settings',
-				array(
-					'quality'           => 85,
-					'conversion_mode'   => 'keep', // 'keep' or 'replace'
-					'keep_backup'       => 1,
-					'convert_thumbnails'=> 1,
-				)
-			)
+			BWO_Settings::get_settings()
 		);
 
 		$quality = BWO_Quality::get_quality( $settings['quality'] );
@@ -44,6 +36,7 @@ class BWO_Converter {
 		if ( ! $file_path || ! file_exists( $file_path ) ) {
 			$result->error_message = __( 'Attachment source file does not exist on server.', 'budi-webp-optimizer' );
 			update_post_meta( $attachment_id, '_bwo_failed', $result->error_message );
+			BWO_Logger::log( "Failed converting attachment #{$attachment_id}: Source file not found.", 'error' );
 			return $result;
 		}
 
@@ -55,6 +48,7 @@ class BWO_Converter {
 		if ( ! in_array( $mime_type, array( 'image/jpeg', 'image/png' ), true ) ) {
 			$result->error_message = __( 'Only JPEG and PNG images are supported for WebP conversion.', 'budi-webp-optimizer' );
 			update_post_meta( $attachment_id, '_bwo_failed', $result->error_message );
+			BWO_Logger::log( "Failed converting attachment #{$attachment_id}: Unsupported MIME type ({$mime_type}).", 'error' );
 			return $result;
 		}
 
@@ -73,7 +67,7 @@ class BWO_Converter {
 		$result->webp_path = $destination_webp;
 		$result->webp_size = filesize( $destination_webp );
 
-		// Check if WebP is actually smaller or if we enforce it anyway
+		// Calculate savings
 		$result->saved_bytes   = max( 0, $result->original_size - $result->webp_size );
 		$result->saved_percent = BWO_Formatting::calculate_savings_percent( $result->original_size, $result->webp_size );
 
@@ -83,6 +77,7 @@ class BWO_Converter {
 			if ( is_wp_error( $replace_res ) ) {
 				$result->error_message = $replace_res->get_error_message();
 				update_post_meta( $attachment_id, '_bwo_failed', $result->error_message );
+				BWO_Logger::log( "Failed replacing attachment #{$attachment_id}: " . $result->error_message, 'error' );
 				return $result;
 			}
 		}
@@ -113,7 +108,8 @@ class BWO_Converter {
 		delete_transient( 'bwo_stats_summary' );
 
 		$result->success = true;
-		BWO_Logger::log( "Converted attachment #{$attachment_id} to WebP. Saved {$result->saved_percent}%" );
+		$filename = basename( $file_path );
+		BWO_Logger::log( "Converted attachment #{$attachment_id} ({$filename}) to WebP. Saved {$result->saved_percent}% (" . BWO_Formatting::format_bytes( $result->saved_bytes ) . ")", 'success' );
 
 		return $result;
 	}
