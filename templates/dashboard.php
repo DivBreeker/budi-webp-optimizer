@@ -311,7 +311,7 @@ $logs     = BWO_Logger::get_logs();
 						<p class="bwo-desc"><?php esc_html_e( 'Choose how the plugin should handle original image files.', 'budi-webp-optimizer' ); ?></p>
 
 						<div class="bwo-radio-cards">
-							<label class="bwo-radio-card <?php echo 'keep' === $settings['conversion_mode'] ? 'selected' : ''; ?>">
+							<label class="bwo-radio-card <?php echo esc_attr( 'keep' === $settings['conversion_mode'] ? 'selected' : '' ); ?>">
 								<input type="radio" name="conversion_mode" value="keep" <?php checked( $settings['conversion_mode'], 'keep' ); ?> />
 								<div class="bwo-radio-content">
 									<strong><?php esc_html_e( 'Keep original and create WebP', 'budi-webp-optimizer' ); ?></strong>
@@ -319,7 +319,7 @@ $logs     = BWO_Logger::get_logs();
 								</div>
 							</label>
 
-							<label class="bwo-radio-card <?php echo 'replace' === $settings['conversion_mode'] ? 'selected' : ''; ?>">
+							<label class="bwo-radio-card <?php echo esc_attr( 'replace' === $settings['conversion_mode'] ? 'selected' : '' ); ?>">
 								<input type="radio" name="conversion_mode" value="replace" <?php checked( $settings['conversion_mode'], 'replace' ); ?> />
 								<div class="bwo-radio-content">
 									<strong><?php esc_html_e( 'Replace original with WebP', 'budi-webp-optimizer' ); ?></strong>
@@ -342,9 +342,9 @@ $logs     = BWO_Logger::get_logs();
 						<input type="range" name="quality" id="bwo-quality-slider" min="50" max="100" value="<?php echo esc_attr( $settings['quality'] ); ?>" class="bwo-range-slider" />
 						
 						<div class="bwo-slider-ticks">
-							<span class="bwo-tick-btn <?php echo 75 === (int)$settings['quality'] ? 'active' : ''; ?>" data-val="75"><?php esc_html_e( 'Smaller file (75%)', 'budi-webp-optimizer' ); ?></span>
-							<span class="bwo-tick-btn <?php echo 85 === (int)$settings['quality'] ? 'active' : ''; ?>" data-val="85"><?php esc_html_e( 'Balanced (85%)', 'budi-webp-optimizer' ); ?></span>
-							<span class="bwo-tick-btn <?php echo 96 === (int)$settings['quality'] ? 'active' : ''; ?>" data-val="96"><?php esc_html_e( 'Highest quality (96%)', 'budi-webp-optimizer' ); ?></span>
+							<span class="bwo-tick-btn <?php echo esc_attr( 75 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="75"><?php esc_html_e( 'Smaller file (75%)', 'budi-webp-optimizer' ); ?></span>
+							<span class="bwo-tick-btn <?php echo esc_attr( 85 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="85"><?php esc_html_e( 'Balanced (85%)', 'budi-webp-optimizer' ); ?></span>
+							<span class="bwo-tick-btn <?php echo esc_attr( 96 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="96"><?php esc_html_e( 'Highest quality (96%)', 'budi-webp-optimizer' ); ?></span>
 						</div>
 					</div>
 
@@ -394,11 +394,11 @@ $logs     = BWO_Logger::get_logs();
 					<div class="bwo-report-card">
 						<h4><?php esc_html_e( 'Server Environment', 'budi-webp-optimizer' ); ?></h4>
 						<ul class="bwo-report-list">
-							<li><span><?php esc_html_e( 'WebP Support:', 'budi-webp-optimizer' ); ?></span> <strong class="<?php echo $server['supports_webp'] ? 'bwo-text-success' : 'bwo-text-danger'; ?>"><?php echo $server['supports_webp'] ? esc_html__( 'Active', 'budi-webp-optimizer' ) : esc_html__( 'Not Supported', 'budi-webp-optimizer' ); ?></strong></li>
+							<li><span><?php esc_html_e( 'WebP Support:', 'budi-webp-optimizer' ); ?></span> <strong class="<?php echo esc_attr( $server['supports_webp'] ? 'bwo-text-success' : 'bwo-text-danger' ); ?>"><?php echo esc_html( $server['supports_webp'] ? __( 'Active', 'budi-webp-optimizer' ) : __( 'Not Supported', 'budi-webp-optimizer' ) ); ?></strong></li>
 							<li><span><?php esc_html_e( 'Active Encoder:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['active_engine'] ); ?></strong></li>
 							<li><span><?php esc_html_e( 'PHP Version:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['php_version'] ); ?></strong></li>
-							<li><span><?php esc_html_e( 'GD Extension:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo $server['gd_webp'] ? '✓ WebP Enabled' : ( $server['has_gd'] ? 'Loaded (No WebP)' : 'Missing' ); ?></strong></li>
-							<li><span><?php esc_html_e( 'Imagick Extension:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo $server['imagick_webp'] ? '✓ WebP Enabled' : ( $server['has_imagick'] ? 'Loaded (No WebP)' : 'Missing' ); ?></strong></li>
+							<li><span><?php esc_html_e( 'GD Extension:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['gd_webp'] ? '✓ WebP Enabled' : ( $server['has_gd'] ? 'Loaded (No WebP)' : 'Missing' ) ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Imagick Extension:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['imagick_webp'] ? '✓ WebP Enabled' : ( $server['has_imagick'] ? 'Loaded (No WebP)' : 'Missing' ) ); ?></strong></li>
 							<li><span><?php esc_html_e( 'Memory Limit:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['memory_limit'] ); ?></strong></li>
 						</ul>
 					</div>

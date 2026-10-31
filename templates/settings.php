@@ -48,7 +48,7 @@ $settings = BWO_Settings::get_settings();
 				<p class="bwo-desc"><?php esc_html_e( 'Choose how original image files and WordPress attachment records should be modified.', 'budi-webp-optimizer' ); ?></p>
 
 				<div class="bwo-radio-cards">
-					<label class="bwo-radio-card <?php echo 'keep' === $settings['conversion_mode'] ? 'selected' : ''; ?>">
+					<label class="bwo-radio-card <?php echo esc_attr( 'keep' === $settings['conversion_mode'] ? 'selected' : '' ); ?>">
 						<input type="radio" name="conversion_mode" value="keep" <?php checked( $settings['conversion_mode'], 'keep' ); ?> />
 						<div class="bwo-radio-content">
 							<strong><?php esc_html_e( 'Keep original and create WebP', 'budi-webp-optimizer' ); ?></strong>
@@ -56,7 +56,7 @@ $settings = BWO_Settings::get_settings();
 						</div>
 					</label>
 
-					<label class="bwo-radio-card <?php echo 'replace' === $settings['conversion_mode'] ? 'selected' : ''; ?>">
+					<label class="bwo-radio-card <?php echo esc_attr( 'replace' === $settings['conversion_mode'] ? 'selected' : '' ); ?>">
 						<input type="radio" name="conversion_mode" value="replace" <?php checked( $settings['conversion_mode'], 'replace' ); ?> />
 						<div class="bwo-radio-content">
 							<strong><?php esc_html_e( 'Replace original with WebP', 'budi-webp-optimizer' ); ?></strong>
@@ -78,9 +78,9 @@ $settings = BWO_Settings::get_settings();
 				<input type="range" name="quality" id="bwo-quality-slider-2" min="50" max="100" value="<?php echo esc_attr( $settings['quality'] ); ?>" class="bwo-range-slider" />
 				
 				<div class="bwo-slider-ticks">
-					<span class="bwo-tick-btn <?php echo 75 === (int)$settings['quality'] ? 'active' : ''; ?>" data-val="75"><?php esc_html_e( 'Smaller file (75%)', 'budi-webp-optimizer' ); ?></span>
-					<span class="bwo-tick-btn <?php echo 85 === (int)$settings['quality'] ? 'active' : ''; ?>" data-val="85"><?php esc_html_e( 'Balanced (85%)', 'budi-webp-optimizer' ); ?></span>
-					<span class="bwo-tick-btn <?php echo 96 === (int)$settings['quality'] ? 'active' : ''; ?>" data-val="96"><?php esc_html_e( 'Highest quality (96%)', 'budi-webp-optimizer' ); ?></span>
+					<span class="bwo-tick-btn <?php echo esc_attr( 75 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="75"><?php esc_html_e( 'Smaller file (75%)', 'budi-webp-optimizer' ); ?></span>
+					<span class="bwo-tick-btn <?php echo esc_attr( 85 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="85"><?php esc_html_e( 'Balanced (85%)', 'budi-webp-optimizer' ); ?></span>
+					<span class="bwo-tick-btn <?php echo esc_attr( 96 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="96"><?php esc_html_e( 'Highest quality (96%)', 'budi-webp-optimizer' ); ?></span>
 				</div>
 			</div>
 

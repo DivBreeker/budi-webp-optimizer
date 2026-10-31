@@ -447,11 +447,21 @@ class BWO_Admin {
 
 		if ( $is_conv ) {
 			$pct = isset( $data['saved_percent'] ) ? round( $data['saved_percent'] ) : 0;
-			echo '<span style="color:#15803d; font-weight:600;">✓ ' . esc_html__( 'WebP', 'budi-webp-optimizer' ) . ' (-' . esc_html( $pct ) . '%)</span>';
+			printf(
+				'<span style="color:#15803d; font-weight:600;">✓ %s (-%s%%)</span>',
+				esc_html__( 'WebP', 'budi-webp-optimizer' ),
+				esc_html( $pct )
+			);
 		} elseif ( $is_fail ) {
-			echo '<span style="color:#b91c1c; font-weight:600;">✗ ' . esc_html__( 'Failed', 'budi-webp-optimizer' ) . '</span>';
+			printf(
+				'<span style="color:#b91c1c; font-weight:600;">✗ %s</span>',
+				esc_html__( 'Failed', 'budi-webp-optimizer' )
+			);
 		} else {
-			echo '<span style="color:#c2410c;">— ' . esc_html__( 'Pending', 'budi-webp-optimizer' ) . '</span>';
+			printf(
+				'<span style="color:#c2410c;">— %s</span>',
+				esc_html__( 'Pending', 'budi-webp-optimizer' )
+			);
 		}
 	}
 }

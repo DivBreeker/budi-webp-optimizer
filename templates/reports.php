@@ -61,8 +61,8 @@ $logs    = BWO_Logger::get_logs();
 			<ul class="bwo-report-list">
 				<li><span><?php esc_html_e( 'WebP Engine:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( $server['active_engine'] ); ?></strong></li>
 				<li><span><?php esc_html_e( 'PHP Version:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['php_version'] ); ?></strong></li>
-				<li><span><?php esc_html_e( 'PHP GD WebP:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo $server['gd_webp'] ? 'Supported' : 'Unavailable'; ?></strong></li>
-				<li><span><?php esc_html_e( 'PHP Imagick WebP:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo $server['imagick_webp'] ? 'Supported' : 'Unavailable'; ?></strong></li>
+				<li><span><?php esc_html_e( 'GD Extension:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['gd_webp'] ? __( 'Supported', 'budi-webp-optimizer' ) : __( 'Unavailable', 'budi-webp-optimizer' ) ); ?></strong></li>
+				<li><span><?php esc_html_e( 'PHP Imagick WebP:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['imagick_webp'] ? __( 'Supported', 'budi-webp-optimizer' ) : __( 'Unavailable', 'budi-webp-optimizer' ) ); ?></strong></li>
 				<li><span><?php esc_html_e( 'Memory Limit:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['memory_limit'] ); ?></strong></li>
 				<li><span><?php esc_html_e( 'Max Execution Time:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['max_execution_time'] ); ?>s</strong></li>
 			</ul>
