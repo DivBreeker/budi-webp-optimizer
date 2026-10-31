@@ -141,34 +141,52 @@ class BWO_Media_Scanner {
 		$per_page = max( 1, min( 100, absint( $r['per_page'] ) ) );
 		$offset   = ( $paged - 1 ) * $per_page;
 
-		$where = "WHERE p.post_type = 'attachment' AND (p.post_mime_type IN ('image/jpeg', 'image/png', 'image/jpg') OR pm_conv.meta_value = '1')";
-		$joins = "LEFT JOIN {$wpdb->postmeta} pm_conv ON (p.ID = pm_conv.post_id AND pm_conv.meta_key = '_bwo_converted')
+		$where_base = "WHERE p.post_type = 'attachment' AND (p.post_mime_type IN ('image/jpeg', 'image/png', 'image/jpg') OR pm_conv.meta_value = '1')";
+		$joins      = "LEFT JOIN {$wpdb->postmeta} pm_conv ON (p.ID = pm_conv.post_id AND pm_conv.meta_key = '_bwo_converted')
 		          LEFT JOIN {$wpdb->postmeta} pm_fail ON (p.ID = pm_fail.post_id AND pm_fail.meta_key = '_bwo_failed')";
 
+		// Extra WHERE conditions are appended only from internal sanitized/prepared values — never raw user input.
+		$where_extra        = '';
+		$where_extra_params = array();
+
 		if ( ! empty( $r['search'] ) ) {
-			$search_like = '%' . $wpdb->esc_like( sanitize_text_field( $r['search'] ) ) . '%';
-			$where .= $wpdb->prepare( " AND (p.post_title LIKE %s OR p.guid LIKE %s)", $search_like, $search_like );
+			$search_like          = '%' . $wpdb->esc_like( sanitize_text_field( $r['search'] ) ) . '%';
+			$where_extra         .= ' AND (p.post_title LIKE %s OR p.guid LIKE %s)';
+			$where_extra_params[] = $search_like;
+			$where_extra_params[] = $search_like;
 		}
 
 		if ( 'converted' === $r['status'] ) {
-			$where .= " AND pm_conv.meta_value = '1'";
+			$where_extra .= " AND pm_conv.meta_value = '1'";
 		} elseif ( 'pending' === $r['status'] ) {
-			$where .= " AND pm_conv.meta_value IS NULL AND pm_fail.meta_value IS NULL";
+			$where_extra .= ' AND pm_conv.meta_value IS NULL AND pm_fail.meta_value IS NULL';
 		} elseif ( 'failed' === $r['status'] ) {
-			$where .= " AND pm_fail.meta_value IS NOT NULL";
+			$where_extra .= ' AND pm_fail.meta_value IS NOT NULL';
 		}
 
-		$total_items = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Query is dynamically built from internal variables only; caching handled at stats level.
-			"SELECT COUNT(DISTINCT p.ID) FROM {$wpdb->posts} p {$joins} {$where}" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		);
-
-		$ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where is built from internal logic only; user search is escaped via $wpdb->esc_like() and $wpdb->prepare().
-			$wpdb->prepare(
-				"SELECT DISTINCT p.ID FROM {$wpdb->posts} p {$joins} {$where} ORDER BY p.ID DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// Build fully prepared SQL strings. All user-supplied values are passed through $wpdb->prepare().
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		if ( ! empty( $where_extra_params ) ) {
+			$count_sql = $wpdb->prepare(
+				"SELECT COUNT(DISTINCT p.ID) FROM {$wpdb->posts} p {$joins} {$where_base}{$where_extra}",
+				$where_extra_params
+			);
+			$ids_sql   = $wpdb->prepare(
+				"SELECT DISTINCT p.ID FROM {$wpdb->posts} p {$joins} {$where_base}{$where_extra} ORDER BY p.ID DESC LIMIT %d OFFSET %d",
+				array_merge( $where_extra_params, array( $per_page, $offset ) )
+			);
+		} else {
+			$count_sql = "SELECT COUNT(DISTINCT p.ID) FROM {$wpdb->posts} p {$joins} {$where_base}";
+			$ids_sql   = $wpdb->prepare(
+				"SELECT DISTINCT p.ID FROM {$wpdb->posts} p {$joins} {$where_base} ORDER BY p.ID DESC LIMIT %d OFFSET %d",
 				$per_page,
 				$offset
-			)
-		);
+			);
+		}
+
+		$total_items = (int) $wpdb->get_var( $count_sql );
+		$ids         = $wpdb->get_col( $ids_sql );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$items = array();
 		foreach ( $ids as $id ) {
