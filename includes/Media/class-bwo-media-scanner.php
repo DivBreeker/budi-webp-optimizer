@@ -122,13 +122,12 @@ class BWO_Media_Scanner {
 
 	/**
 	 * Query images for the dashboard table with filtering, search, and pagination.
+	 * Uses WP_Query to avoid raw $wpdb calls and satisfy PHPCS/PluginCheck security sniffs.
 	 *
 	 * @param array $args
 	 * @return array
 	 */
 	public static function query_images( $args = array() ) {
-		global $wpdb;
-
 		$defaults = array(
 			'paged'    => 1,
 			'per_page' => 10,
@@ -139,65 +138,73 @@ class BWO_Media_Scanner {
 
 		$paged    = max( 1, absint( $r['paged'] ) );
 		$per_page = max( 1, min( 100, absint( $r['per_page'] ) ) );
-		$offset   = ( $paged - 1 ) * $per_page;
+		$status   = sanitize_key( $r['status'] );
+		$search   = sanitize_text_field( $r['search'] );
 
-		$where_base = "WHERE p.post_type = 'attachment' AND (p.post_mime_type IN ('image/jpeg', 'image/png', 'image/jpg') OR pm_conv.meta_value = '1')";
-		$joins      = "LEFT JOIN {$wpdb->postmeta} pm_conv ON (p.ID = pm_conv.post_id AND pm_conv.meta_key = '_bwo_converted')
-		          LEFT JOIN {$wpdb->postmeta} pm_fail ON (p.ID = pm_fail.post_id AND pm_fail.meta_key = '_bwo_failed')";
+		$query_args = array(
+			'post_type'      => 'attachment',
+			'post_status'    => 'inherit',
+			'posts_per_page' => $per_page,
+			'paged'          => $paged,
+			'fields'         => 'ids',
+			'orderby'        => 'ID',
+			'order'          => 'DESC',
+			'no_found_rows'  => false,
+		);
 
-		// Extra WHERE conditions are appended only from internal sanitized/prepared values — never raw user input.
-		$where_extra        = '';
-		$where_extra_params = array();
-
-		if ( ! empty( $r['search'] ) ) {
-			$search_like          = '%' . $wpdb->esc_like( sanitize_text_field( $r['search'] ) ) . '%';
-			$where_extra         .= ' AND (p.post_title LIKE %s OR p.guid LIKE %s)';
-			$where_extra_params[] = $search_like;
-			$where_extra_params[] = $search_like;
+		if ( ! empty( $search ) ) {
+			$query_args['s'] = $search;
 		}
 
-		if ( 'converted' === $r['status'] ) {
-			$where_extra .= " AND pm_conv.meta_value = '1'";
-		} elseif ( 'pending' === $r['status'] ) {
-			$where_extra .= ' AND pm_conv.meta_value IS NULL AND pm_fail.meta_value IS NULL';
-		} elseif ( 'failed' === $r['status'] ) {
-			$where_extra .= ' AND pm_fail.meta_value IS NOT NULL';
-		}
-
-		// Build fully prepared SQL strings. All user-supplied values are passed through $wpdb->prepare().
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		if ( ! empty( $where_extra_params ) ) {
-			$count_sql = $wpdb->prepare(
-				"SELECT COUNT(DISTINCT p.ID) FROM {$wpdb->posts} p {$joins} {$where_base}{$where_extra}",
-				$where_extra_params
+		// Status-based filtering using standard WP_Query meta_query and post_mime_type.
+		// All eligible image types: JPG/PNG (original) and WebP (replaced-mode converted).
+		if ( 'converted' === $status ) {
+			$query_args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				array(
+					'key'   => '_bwo_converted',
+					'value' => '1',
+				),
 			);
-			$ids_sql   = $wpdb->prepare(
-				"SELECT DISTINCT p.ID FROM {$wpdb->posts} p {$joins} {$where_base}{$where_extra} ORDER BY p.ID DESC LIMIT %d OFFSET %d",
-				array_merge( $where_extra_params, array( $per_page, $offset ) )
+		} elseif ( 'pending' === $status ) {
+			$query_args['post_mime_type'] = array( 'image/jpeg', 'image/png', 'image/jpg' );
+			$query_args['meta_query']     = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				'relation' => 'AND',
+				array(
+					'key'     => '_bwo_converted',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key'     => '_bwo_failed',
+					'compare' => 'NOT EXISTS',
+				),
+			);
+		} elseif ( 'failed' === $status ) {
+			$query_args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				array(
+					'key'     => '_bwo_failed',
+					'compare' => 'EXISTS',
+				),
 			);
 		} else {
-			$count_sql = "SELECT COUNT(DISTINCT p.ID) FROM {$wpdb->posts} p {$joins} {$where_base}";
-			$ids_sql   = $wpdb->prepare(
-				"SELECT DISTINCT p.ID FROM {$wpdb->posts} p {$joins} {$where_base} ORDER BY p.ID DESC LIMIT %d OFFSET %d",
-				$per_page,
-				$offset
-			);
+			// 'all': JPEG/PNG (pending/keep-mode) and WebP (replace-mode converted).
+			// BWO always updates post_mime_type to image/webp upon replace-mode conversion.
+			$query_args['post_mime_type'] = array( 'image/jpeg', 'image/png', 'image/jpg', 'image/webp' );
 		}
 
-		$total_items = (int) $wpdb->get_var( $count_sql );
-		$ids         = $wpdb->get_col( $ids_sql );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$query       = new WP_Query( $query_args );
+		$ids         = $query->posts; // 'fields' => 'ids' returns plain array of IDs.
+		$total_items = $query->found_posts;
 
 		$items = array();
 		foreach ( $ids as $id ) {
-			$att = new BWO_Attachment( $id );
+			$att     = new BWO_Attachment( $id );
 			$items[] = $att->to_table_array();
 		}
 
 		return array(
 			'items'       => $items,
 			'total_items' => $total_items,
-			'total_pages' => ceil( $total_items / $per_page ),
+			'total_pages' => (int) ceil( $total_items / $per_page ),
 			'paged'       => $paged,
 		);
 	}
