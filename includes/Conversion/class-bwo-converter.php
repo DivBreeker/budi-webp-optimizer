@@ -71,6 +71,14 @@ class BWO_Converter {
 		$result->saved_bytes   = max( 0, $result->original_size - $result->webp_size );
 		$result->saved_percent = BWO_Formatting::calculate_savings_percent( $result->original_size, $result->webp_size );
 
+		// Step 1: Backup original files if backup option is enabled (applies to BOTH Keep and Replace modes)
+		if ( $backup && ! BWO_Backup_Manager::has_backup( $attachment_id ) ) {
+			$backed_up = BWO_Backup_Manager::create_backup( $attachment_id );
+			if ( is_wp_error( $backed_up ) ) {
+				BWO_Logger::log( "Warning: Could not create backup for attachment #{$attachment_id}: " . $backed_up->get_error_message(), 'warning' );
+			}
+		}
+
 		// If Replace mode is enabled, safely replace attachment file
 		if ( 'replace' === $mode ) {
 			$replace_res = BWO_Media_Replacer::replace( $attachment_id, $destination_webp, $backup );

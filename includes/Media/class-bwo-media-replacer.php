@@ -27,8 +27,8 @@ class BWO_Media_Replacer {
 
 		$original_file = get_attached_file( $attachment_id );
 
-		// Step 1: Backup original files if backup enabled
-		if ( $keep_backup ) {
+		// Step 1: Backup original files if backup enabled and not already backed up
+		if ( $keep_backup && ! BWO_Backup_Manager::has_backup( $attachment_id ) ) {
 			$backed_up = BWO_Backup_Manager::create_backup( $attachment_id );
 			if ( is_wp_error( $backed_up ) ) {
 				return $backed_up;
