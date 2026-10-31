@@ -34,14 +34,14 @@ class BWO_Restore_Manager {
 		$current_file = get_attached_file( $attachment_id );
 		if ( $current_file && file_exists( $current_file ) && $current_file !== $original_file ) {
 			if ( 'webp' === strtolower( pathinfo( $current_file, PATHINFO_EXTENSION ) ) ) {
-				@unlink( $current_file );
+				wp_delete_file( $current_file );
 			}
 		}
 
 		// Also check adjacent webp file if it was "Keep original" mode
 		$adjacent_webp = BWO_Utils::get_webp_path( $original_file );
 		if ( file_exists( $adjacent_webp ) ) {
-			@unlink( $adjacent_webp );
+			wp_delete_file( $adjacent_webp );
 		}
 
 		// Restore original main file from backup
@@ -62,7 +62,7 @@ class BWO_Restore_Manager {
 				// Remove any generated webp variant
 				$webp_thumb = BWO_Utils::get_webp_path( $thumb_dest );
 				if ( file_exists( $webp_thumb ) ) {
-					@unlink( $webp_thumb );
+					wp_delete_file( $webp_thumb );
 				}
 			}
 		}

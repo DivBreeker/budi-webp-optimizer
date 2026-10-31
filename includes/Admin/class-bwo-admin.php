@@ -236,9 +236,11 @@ class BWO_Admin {
 		BWO_Nonce::verify_or_die();
 
 		$count = BWO_Backup_Manager::delete_all_backups();
+		/* translators: %d: Number of backup records cleared */
+		$message = sprintf( __( 'All original backups removed (%d records cleared).', 'budi-webp-optimizer' ), $count );
 		wp_send_json_success(
 			array(
-				'message' => sprintf( __( 'All original backups removed (%d records cleared).', 'budi-webp-optimizer' ), $count ),
+				'message' => $message,
 				'stats'   => BWO_Media_Scanner::get_summary_stats( true ),
 			)
 		);
@@ -267,9 +269,11 @@ class BWO_Admin {
 		$queue_state = BWO_Job_Queue::initialize_queue( $ids );
 		BWO_Logger::log( sprintf( 'Started bulk WebP conversion queue with %d images (Scope: %s)', count( $ids ), strtoupper( $mode ) ) );
 
+		/* translators: %d: Number of images queued for conversion */
+		$message = sprintf( __( 'Queued %d images for conversion.', 'budi-webp-optimizer' ), count( $ids ) );
 		wp_send_json_success(
 			array(
-				'message' => sprintf( __( 'Queued %d images for conversion.', 'budi-webp-optimizer' ), count( $ids ) ),
+				'message' => $message,
 				'queue'   => $queue_state,
 			)
 		);

@@ -23,6 +23,7 @@ class BWO_Image_Validator {
 		}
 
 		if ( ! file_exists( $file_path ) ) {
+			/* translators: %s: File name */
 			return new WP_Error( 'bwo_file_missing', sprintf( __( 'Image file not found: %s', 'budi-webp-optimizer' ), basename( $file_path ) ) );
 		}
 

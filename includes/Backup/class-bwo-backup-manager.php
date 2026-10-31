@@ -129,15 +129,24 @@ class BWO_Backup_Manager {
 	public static function delete_backup( $attachment_id ) {
 		$backup = self::get_backup( $attachment_id );
 		if ( ! empty( $backup['backup_folder'] ) && file_exists( $backup['backup_folder'] ) ) {
-			$files = glob( trailingslashit( $backup['backup_folder'] ) . '*' );
-			if ( $files ) {
-				foreach ( $files as $file ) {
-					if ( is_file( $file ) ) {
-						@unlink( $file );
+			global $wp_filesystem;
+			if ( empty( $wp_filesystem ) ) {
+				require_once ABSPATH . '/wp-admin/includes/file.php';
+				WP_Filesystem();
+			}
+
+			if ( ! empty( $wp_filesystem ) ) {
+				$wp_filesystem->delete( $backup['backup_folder'], true );
+			} else {
+				$files = glob( trailingslashit( $backup['backup_folder'] ) . '*' );
+				if ( $files ) {
+					foreach ( $files as $file ) {
+						if ( is_file( $file ) ) {
+							wp_delete_file( $file );
+						}
 					}
 				}
 			}
-			@rmdir( $backup['backup_folder'] );
 		}
 
 		delete_post_meta( $attachment_id, self::META_BACKUP_DATA );
@@ -151,22 +160,35 @@ class BWO_Backup_Manager {
 	 * @return int Number of backup metas removed
 	 */
 	public static function delete_all_backups() {
-		global $wpdb;
+		global $wpdb, $wp_filesystem;
 
 		$backup_dir = BWO_Utils::get_backup_dir();
 		if ( file_exists( $backup_dir ) ) {
-			$subdirs = glob( trailingslashit( $backup_dir ) . '*', GLOB_ONLYDIR );
-			if ( $subdirs ) {
-				foreach ( $subdirs as $dir ) {
-					$files = glob( trailingslashit( $dir ) . '*' );
-					if ( $files ) {
-						foreach ( $files as $file ) {
-							if ( is_file( $file ) ) {
-								@unlink( $file );
+			if ( empty( $wp_filesystem ) ) {
+				require_once ABSPATH . '/wp-admin/includes/file.php';
+				WP_Filesystem();
+			}
+
+			if ( ! empty( $wp_filesystem ) ) {
+				$subdirs = glob( trailingslashit( $backup_dir ) . '*', GLOB_ONLYDIR );
+				if ( $subdirs ) {
+					foreach ( $subdirs as $dir ) {
+						$wp_filesystem->delete( $dir, true );
+					}
+				}
+			} else {
+				$subdirs = glob( trailingslashit( $backup_dir ) . '*', GLOB_ONLYDIR );
+				if ( $subdirs ) {
+					foreach ( $subdirs as $dir ) {
+						$files = glob( trailingslashit( $dir ) . '*' );
+						if ( $files ) {
+							foreach ( $files as $file ) {
+								if ( is_file( $file ) ) {
+									wp_delete_file( $file );
+								}
 							}
 						}
 					}
-					@rmdir( $dir );
 				}
 			}
 		}
