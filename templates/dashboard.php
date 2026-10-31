@@ -315,7 +315,7 @@ $logs     = BWO_Logger::get_logs();
 								<input type="radio" name="conversion_mode" value="keep" <?php checked( $settings['conversion_mode'], 'keep' ); ?> />
 								<div class="bwo-radio-content">
 									<strong><?php esc_html_e( 'Keep original and create WebP', 'budi-webp-optimizer' ); ?></strong>
-									<span><?php esc_html_e( 'Original files stay intact in uploads and WebP files are generated alongside them. When backups are enabled, a recoverable copy is saved in Backups.', 'budi-webp-optimizer' ); ?></span>
+									<span><?php esc_html_e( 'Converts images to WebP and safely stores original files in Backups for 1-click restore.', 'budi-webp-optimizer' ); ?></span>
 								</div>
 							</label>
 
@@ -323,7 +323,7 @@ $logs     = BWO_Logger::get_logs();
 								<input type="radio" name="conversion_mode" value="replace" <?php checked( $settings['conversion_mode'], 'replace' ); ?> />
 								<div class="bwo-radio-content">
 									<strong><?php esc_html_e( 'Replace original with WebP', 'budi-webp-optimizer' ); ?></strong>
-									<span><?php esc_html_e( 'Replaces original file references with WebP across WordPress to maximize disk savings. When backups are enabled, original copies are safely stored in Backups.', 'budi-webp-optimizer' ); ?></span>
+									<span><?php esc_html_e( 'Replaces original with WebP and auto-deletes original files without saving backup, maximizing server storage.', 'budi-webp-optimizer' ); ?></span>
 								</div>
 							</label>
 						</div>

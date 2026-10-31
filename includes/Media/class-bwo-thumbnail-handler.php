@@ -17,9 +17,10 @@ class BWO_Thumbnail_Handler {
 	 * @param int    $attachment_id
 	 * @param int    $quality
 	 * @param string $mode ('keep' or 'replace')
+	 * @param bool   $delete_original
 	 * @return array Processed sizes info
 	 */
-	public static function process_thumbnails( $attachment_id, $quality = 85, $mode = 'keep' ) {
+	public static function process_thumbnails( $attachment_id, $quality = 85, $mode = 'keep', $delete_original = false ) {
 		$metadata = wp_get_attachment_metadata( $attachment_id );
 		if ( empty( $metadata['sizes'] ) || ! is_array( $metadata['sizes'] ) ) {
 			return array();
@@ -59,6 +60,10 @@ class BWO_Thumbnail_Handler {
 				if ( 'replace' === $mode ) {
 					$updated_sizes[ $size_key ]['file']      = basename( $dest_webp );
 					$updated_sizes[ $size_key ]['mime-type'] = 'image/webp';
+				}
+
+				if ( $delete_original && $source_thumb !== $dest_webp && file_exists( $source_thumb ) ) {
+					wp_delete_file( $source_thumb );
 				}
 			}
 		}

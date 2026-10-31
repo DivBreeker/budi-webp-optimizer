@@ -18,9 +18,10 @@ class BWO_Media_Replacer {
 	 * @param int    $attachment_id
 	 * @param string $webp_path
 	 * @param bool   $keep_backup
+	 * @param bool   $delete_original
 	 * @return bool|WP_Error
 	 */
-	public static function replace( $attachment_id, $webp_path, $keep_backup = true ) {
+	public static function replace( $attachment_id, $webp_path, $keep_backup = false, $delete_original = false ) {
 		if ( ! file_exists( $webp_path ) || filesize( $webp_path ) === 0 ) {
 			return new WP_Error( 'bwo_invalid_webp', __( 'Generated WebP file is invalid or missing.', 'budi-webp-optimizer' ) );
 		}
@@ -49,6 +50,11 @@ class BWO_Media_Replacer {
 				'post_mime_type' => 'image/webp',
 			)
 		);
+
+		// Step 4: If delete_original is true, permanently delete original main file from disk
+		if ( $delete_original && $original_file && file_exists( $original_file ) && $original_file !== $webp_path ) {
+			wp_delete_file( $original_file );
+		}
 
 		BWO_Logger::log( "Replaced attachment #{$attachment_id} with WebP: {$new_relative}" );
 		return true;

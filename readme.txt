@@ -4,7 +4,7 @@ Tags: webp, image optimizer, performance, compression, media library
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,11 @@ No. Admin scripts and styles are strictly loaded on the plugin's WordPress admin
 6. Diagnostic Reports screen with server WebP environment status and real-time Activity Logs.
 
 == Changelog ==
+
+= 1.0.2 =
+* Fixed conversion mode behaviors: "Keep original" mode securely creates and preserves original files in Backups for 1-click restore, while "Replace original" cleanly switches to WebP and auto-deletes originals without keeping backups.
+* Refactored media query engine using WP_Query for full compliance with WordPress security coding standards.
+* Resolved all WordPress.org plugin directory scanner checks.
 
 = 1.0.1 =
 * Added Delete Backup feature to permanently remove backups and reclaim server disk space.
