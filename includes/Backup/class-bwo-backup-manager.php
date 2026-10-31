@@ -110,7 +110,7 @@ class BWO_Backup_Manager {
 	public static function get_all_backups( $limit = 100 ) {
 		global $wpdb;
 		$limit = absint( $limit );
-		return $wpdb->get_results(
+		return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Backup list must always reflect the current live state.
 			$wpdb->prepare(
 				"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = %s ORDER BY post_id DESC LIMIT %d",
 				self::META_BACKUP_DATA,
@@ -193,7 +193,7 @@ class BWO_Backup_Manager {
 			}
 		}
 
-		$deleted_count = $wpdb->query(
+		$deleted_count = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Intentional bulk delete; no cache invalidation needed.
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s",
 				self::META_BACKUP_DATA

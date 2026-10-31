@@ -131,10 +131,12 @@ class BWO_Admin {
 		BWO_Permissions::verify_or_die();
 		BWO_Nonce::verify_or_die();
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
 		$paged    = isset( $_POST['paged'] ) ? absint( $_POST['paged'] ) : 1;
 		$per_page = isset( $_POST['per_page'] ) ? absint( $_POST['per_page'] ) : 10;
 		$search   = isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '';
 		$status   = isset( $_POST['status'] ) ? sanitize_key( $_POST['status'] ) : 'all';
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		$data = BWO_Media_Scanner::query_images(
 			array(
@@ -155,7 +157,9 @@ class BWO_Admin {
 		BWO_Permissions::verify_or_die();
 		BWO_Nonce::verify_or_die();
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
 		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		if ( ! $attachment_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid attachment ID.', 'budi-webp-optimizer' ) ) );
 		}
@@ -182,7 +186,9 @@ class BWO_Admin {
 		BWO_Permissions::verify_or_die();
 		BWO_Nonce::verify_or_die();
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
 		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		if ( ! $attachment_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid attachment ID.', 'budi-webp-optimizer' ) ) );
 		}
@@ -210,7 +216,9 @@ class BWO_Admin {
 		BWO_Permissions::verify_or_die();
 		BWO_Nonce::verify_or_die();
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
 		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		if ( ! $attachment_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid attachment ID.', 'budi-webp-optimizer' ) ) );
 		}
@@ -253,6 +261,7 @@ class BWO_Admin {
 		BWO_Permissions::verify_or_die();
 		BWO_Nonce::verify_or_die();
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
 		$mode = isset( $_POST['mode'] ) ? sanitize_key( $_POST['mode'] ) : 'all'; // 'all', 'selected', 'pending_only', 'failed_only'
 		$ids  = array();
 
@@ -261,6 +270,7 @@ class BWO_Admin {
 		} else {
 			$ids = BWO_Media_Scanner::get_eligible_ids_for_bulk( $mode );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		if ( empty( $ids ) ) {
 			wp_send_json_error( array( 'message' => __( 'No eligible images found for conversion.', 'budi-webp-optimizer' ) ) );
@@ -325,8 +335,10 @@ class BWO_Admin {
 		BWO_Permissions::verify_or_die();
 		BWO_Nonce::verify_or_die();
 
-		$settings = isset( $_POST['settings'] ) && is_array( $_POST['settings'] ) ? $_POST['settings'] : array();
-		$updated  = BWO_Settings::update_settings( $settings );
+		// phpcs:disable WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput -- Nonce verified above; sanitization handled inside BWO_Settings::update_settings().
+		$raw_settings = isset( $_POST['settings'] ) && is_array( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : array();
+		// phpcs:enable WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput
+		$updated = BWO_Settings::update_settings( $raw_settings );
 
 		wp_send_json_success(
 			array(
@@ -343,7 +355,9 @@ class BWO_Admin {
 		BWO_Permissions::verify_or_die();
 		BWO_Nonce::verify_or_die();
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
 		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		if ( ! $attachment_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid attachment ID.', 'budi-webp-optimizer' ) ) );
 		}

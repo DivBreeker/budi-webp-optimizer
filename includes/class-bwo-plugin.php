@@ -41,10 +41,9 @@ class BWO_Plugin {
 	}
 
 	public function load_textdomain() {
-		load_plugin_textdomain(
-			'budi-webp-optimizer',
-			false,
-			dirname( BWO_PLUGIN_BASENAME ) . '/languages'
-		);
+		// WordPress.org automatically loads translations since WP 4.6.
+		// load_plugin_textdomain() is intentionally omitted for WP.org hosted plugins.
+		// If you are running this plugin outside WordPress.org, enable the line below:
+		// load_plugin_textdomain( 'budi-webp-optimizer', false, dirname( BWO_PLUGIN_BASENAME ) . '/languages' );
 	}
 }
