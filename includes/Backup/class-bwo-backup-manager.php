@@ -102,6 +102,25 @@ class BWO_Backup_Manager {
 	}
 
 	/**
+	 * Get all backup records.
+	 *
+	 * @param int $limit
+	 * @return array
+	 */
+	public static function get_all_backups( $limit = 100 ) {
+		global $wpdb;
+		$limit = absint( $limit );
+		return $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = %s ORDER BY post_id DESC LIMIT %d",
+				self::META_BACKUP_DATA,
+				$limit
+			),
+			ARRAY_A
+		);
+	}
+
+	/**
 	 * Delete backup files and metadata for a specific attachment.
 	 *
 	 * @param int $attachment_id

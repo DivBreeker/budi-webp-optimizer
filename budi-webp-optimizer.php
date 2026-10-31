@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       BUDI WebP Optimizer
  * Plugin URI:        https://budistudio.vercel.app/
- * Description:       Convert smarter. Load faster. A lightweight, high-performance image optimization plugin by BUDI Studio designed to reduce file sizes, preserve visual quality, and ensure seamless website speed.
+ * Description:       Convert smarter. Load faster. Ultra-lightweight WordPress WebP image optimizer with safe backup rollback and WooCommerce support.
  * Version:           1.0.1
  * Author:            BUDI Studio
  * Author URI:        https://budistudio.vercel.app/

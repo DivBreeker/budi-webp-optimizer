@@ -50,20 +50,30 @@ class BWO_Media_Scanner {
 		if ( $total_count > 0 ) {
 			// Get converted IDs
 			$converted_ids = $wpdb->get_col(
-				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_bwo_converted' AND meta_value = '1'"
+				$wpdb->prepare(
+					"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s",
+					'_bwo_converted',
+					'1'
+				)
 			);
 			$converted_ids_map = array_flip( $converted_ids );
 			$converted_count   = count( $converted_ids );
 
 			// Get failed IDs
 			$failed_ids = $wpdb->get_col(
-				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_bwo_failed'"
+				$wpdb->prepare(
+					"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s",
+					'_bwo_failed'
+				)
 			);
 			$failed_count = count( $failed_ids );
 
 			// Compute storage savings from _bwo_webp_data
 			$webp_data_rows = $wpdb->get_results(
-				"SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_bwo_webp_data'",
+				$wpdb->prepare(
+					"SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = %s",
+					'_bwo_webp_data'
+				),
 				ARRAY_A
 			);
 
@@ -198,7 +208,10 @@ class BWO_Media_Scanner {
 			);
 		} elseif ( 'failed_only' === $mode ) {
 			return $wpdb->get_col(
-				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_bwo_failed' ORDER BY post_id DESC"
+				$wpdb->prepare(
+					"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s ORDER BY post_id DESC",
+					'_bwo_failed'
+				)
 			);
 		}
 

@@ -18,6 +18,8 @@ if ( ! empty( $clean_on_uninstall ) ) {
 	delete_option( 'bwo_stats_cache' );
 	delete_option( 'bwo_clean_on_uninstall' );
 	delete_option( 'bwo_queue_state' );
+	delete_option( 'bwo_recent_logs' );
+	delete_transient( 'bwo_stats_summary' );
 
 	// Note: We deliberately do NOT delete media files or backups unless specifically directed,
 	// to avoid catastrophic data loss on client websites.

@@ -9,11 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-global $wpdb;
-$backup_rows = $wpdb->get_results(
-	"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_bwo_backup_data' ORDER BY post_id DESC LIMIT 100",
-	ARRAY_A
-);
+$backup_rows = BWO_Backup_Manager::get_all_backups( 100 );
 
 $total_backup_size = 0;
 if ( ! empty( $backup_rows ) ) {
