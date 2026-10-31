@@ -459,17 +459,26 @@ class BWO_Admin {
 			return;
 		}
 
-		$is_conv = get_post_meta( $post_id, '_bwo_converted', true );
-		$is_fail = get_post_meta( $post_id, '_bwo_failed', true );
-		$data    = get_post_meta( $post_id, '_bwo_webp_data', true );
+		$mime_type = get_post_mime_type( $post_id );
+		$is_webp   = ( 'image/webp' === $mime_type );
+		$is_conv   = get_post_meta( $post_id, '_bwo_converted', true );
+		$is_fail   = get_post_meta( $post_id, '_bwo_failed', true );
+		$data      = get_post_meta( $post_id, '_bwo_webp_data', true );
 
-		if ( $is_conv ) {
+		if ( $is_conv || $is_webp ) {
 			$pct = isset( $data['saved_percent'] ) ? round( $data['saved_percent'] ) : 0;
-			printf(
-				'<span style="color:#15803d; font-weight:600;">✓ %s (-%s%%)</span>',
-				esc_html__( 'WebP', 'budi-webp-optimizer' ),
-				esc_html( $pct )
-			);
+			if ( $pct > 0 ) {
+				printf(
+					'<span style="color:#15803d; font-weight:600;">✓ %s (-%s%%)</span>',
+					esc_html__( 'WebP', 'budi-webp-optimizer' ),
+					esc_html( $pct )
+				);
+			} else {
+				printf(
+					'<span style="color:#15803d; font-weight:600;">✓ %s</span>',
+					esc_html__( 'WebP', 'budi-webp-optimizer' )
+				);
+			}
 		} elseif ( $is_fail ) {
 			printf(
 				'<span style="color:#b91c1c; font-weight:600;">✗ %s</span>',

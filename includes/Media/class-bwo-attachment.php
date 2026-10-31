@@ -54,14 +54,13 @@ class BWO_Attachment {
 		$is_failed    = get_post_meta( $this->id, '_bwo_failed', true );
 		$webp_data    = get_post_meta( $this->id, '_bwo_webp_data', true );
 		$is_converted = get_post_meta( $this->id, '_bwo_converted', true );
+		$is_webp_mime = ( 'image/webp' === $this->mime_type || ( $this->file_path && 'webp' === strtolower( pathinfo( $this->file_path, PATHINFO_EXTENSION ) ) ) );
 
 		if ( $this->file_path && file_exists( $this->file_path ) ) {
 			$this->original_size = filesize( $this->file_path );
 		}
 
-		if ( $is_failed ) {
-			$this->status = 'failed';
-		} elseif ( $is_converted || ! empty( $webp_data['webp_file'] ) ) {
+		if ( $is_converted || ! empty( $webp_data['webp_file'] ) || $is_webp_mime ) {
 			$this->status = 'converted';
 			if ( ! empty( $webp_data['original_size'] ) ) {
 				$this->original_size = $webp_data['original_size'];
@@ -70,8 +69,17 @@ class BWO_Attachment {
 				$this->webp_size = $webp_data['webp_size'];
 			} elseif ( ! empty( $webp_data['webp_file'] ) && file_exists( $webp_data['webp_file'] ) ) {
 				$this->webp_size = filesize( $webp_data['webp_file'] );
+			} elseif ( $is_webp_mime ) {
+				$this->webp_size = $this->original_size;
 			}
 			$this->savings_percent = BWO_Formatting::calculate_savings_percent( $this->original_size, $this->webp_size );
+
+			// If it's already a WebP image, clear any bogus failed flag from prior conversion attempts
+			if ( $is_webp_mime && $is_failed ) {
+				delete_post_meta( $this->id, '_bwo_failed' );
+			}
+		} elseif ( $is_failed ) {
+			$this->status = 'failed';
 		} else {
 			$this->status = 'pending';
 		}

@@ -43,8 +43,28 @@ class BWO_Converter {
 		$result->original_path = $file_path;
 		$result->original_size = filesize( $file_path );
 
+		// Check if already in WebP format
+		$mime_type       = get_post_mime_type( $attachment_id );
+		$is_already_webp = ( 'image/webp' === $mime_type || ( $file_path && 'webp' === strtolower( pathinfo( $file_path, PATHINFO_EXTENSION ) ) ) );
+
+		if ( $is_already_webp ) {
+			update_post_meta( $attachment_id, '_bwo_converted', 1 );
+			delete_post_meta( $attachment_id, '_bwo_failed' );
+
+			$result->success       = true;
+			$result->original_path = $file_path;
+			$result->webp_path     = $file_path;
+			$result->original_size = filesize( $file_path );
+			$result->webp_size     = $result->original_size;
+			$result->saved_bytes   = 0;
+			$result->saved_percent = 0;
+
+			delete_transient( 'bwo_stats_summary' );
+			BWO_Logger::log( "Attachment #{$attachment_id} is already in WebP format.", 'info' );
+			return $result;
+		}
+
 		// Validate MIME type
-		$mime_type = get_post_mime_type( $attachment_id );
 		if ( ! in_array( $mime_type, array( 'image/jpeg', 'image/png' ), true ) ) {
 			$result->error_message = __( 'Only JPEG and PNG images are supported for WebP conversion.', 'budi-webp-optimizer' );
 			update_post_meta( $attachment_id, '_bwo_failed', $result->error_message );

@@ -26,17 +26,18 @@ class BWO_Media_Scanner {
 
 		global $wpdb;
 
-		// Count total eligible images (JPG/PNG or attachments converted by BWO)
+		// Count total eligible images (JPG/PNG or attachments converted by BWO or native WebP)
 		$all_attachments = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Stats are cached in transient bwo_stats_summary; direct query needed for accurate live counts.
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->posts} 
 				WHERE post_type = 'attachment' 
-				AND (post_mime_type IN (%s, %s, %s) OR ID IN (
+				AND (post_mime_type IN (%s, %s, %s, %s) OR ID IN (
 					SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_bwo_converted' AND meta_value = '1'
 				))",
 				'image/jpeg',
 				'image/png',
-				'image/jpg'
+				'image/jpg',
+				'image/webp'
 			)
 		);
 
@@ -48,22 +49,28 @@ class BWO_Media_Scanner {
 		$total_saved     = 0;
 
 		if ( $total_count > 0 ) {
-			// Get converted IDs
+			// Get converted IDs: attachments with _bwo_converted = '1' OR post_mime_type = 'image/webp'
 			$converted_ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Stats cached in transient bwo_stats_summary.
 				$wpdb->prepare(
-					"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s",
-					'_bwo_converted',
-					'1'
+					"SELECT DISTINCT p.ID FROM {$wpdb->posts} p
+					LEFT JOIN {$wpdb->postmeta} pm_conv ON (p.ID = pm_conv.post_id AND pm_conv.meta_key = '_bwo_converted')
+					WHERE p.post_type = 'attachment' 
+					AND (p.post_mime_type = %s OR pm_conv.meta_value = '1')",
+					'image/webp'
 				)
 			);
 			$converted_ids_map = array_flip( $converted_ids );
 			$converted_count   = count( $converted_ids );
 
-			// Get failed IDs
+			// Get failed IDs (excluding any that are already in WebP format)
 			$failed_ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Stats cached in transient bwo_stats_summary.
 				$wpdb->prepare(
-					"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s",
-					'_bwo_failed'
+					"SELECT DISTINCT pm_fail.post_id FROM {$wpdb->postmeta} pm_fail
+					INNER JOIN {$wpdb->posts} p ON (pm_fail.post_id = p.ID)
+					WHERE pm_fail.meta_key = %s
+					AND p.post_mime_type != %s",
+					'_bwo_failed',
+					'image/webp'
 				)
 			);
 			$failed_count = count( $failed_ids );
@@ -157,14 +164,9 @@ class BWO_Media_Scanner {
 		}
 
 		// Status-based filtering using standard WP_Query meta_query and post_mime_type.
-		// All eligible image types: JPG/PNG (original) and WebP (replaced-mode converted).
+		// All eligible image types: JPG/PNG (original) and WebP (replaced-mode converted or native WebP).
 		if ( 'converted' === $status ) {
-			$query_args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				array(
-					'key'   => '_bwo_converted',
-					'value' => '1',
-				),
-			);
+			$query_args['post_mime_type'] = array( 'image/webp' );
 		} elseif ( 'pending' === $status ) {
 			$query_args['post_mime_type'] = array( 'image/jpeg', 'image/png', 'image/jpg' );
 			$query_args['meta_query']     = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
@@ -179,15 +181,15 @@ class BWO_Media_Scanner {
 				),
 			);
 		} elseif ( 'failed' === $status ) {
-			$query_args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			$query_args['post_mime_type'] = array( 'image/jpeg', 'image/png', 'image/jpg' );
+			$query_args['meta_query']     = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				array(
 					'key'     => '_bwo_failed',
 					'compare' => 'EXISTS',
 				),
 			);
 		} else {
-			// 'all': JPEG/PNG (pending/keep-mode) and WebP (replace-mode converted).
-			// BWO always updates post_mime_type to image/webp upon replace-mode conversion.
+			// 'all': JPEG/PNG (pending) and WebP (converted or native WebP).
 			$query_args['post_mime_type'] = array( 'image/jpeg', 'image/png', 'image/jpg', 'image/webp' );
 		}
 
@@ -227,6 +229,7 @@ class BWO_Media_Scanner {
 					WHERE p.post_type = 'attachment' 
 					AND p.post_mime_type IN (%s, %s, %s)
 					AND pm_conv.meta_value IS NULL
+					AND pm_fail.meta_value IS NULL
 					ORDER BY p.ID DESC",
 					'image/jpeg',
 					'image/png',
@@ -236,19 +239,27 @@ class BWO_Media_Scanner {
 		} elseif ( 'failed_only' === $mode ) {
 			return $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk processing requires fresh uncached data.
 				$wpdb->prepare(
-					"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s ORDER BY post_id DESC",
-					'_bwo_failed'
+					"SELECT p.ID FROM {$wpdb->posts} p
+					INNER JOIN {$wpdb->postmeta} pm_fail ON (p.ID = pm_fail.post_id AND pm_fail.meta_key = %s)
+					WHERE p.post_type = 'attachment'
+					AND p.post_mime_type IN (%s, %s, %s)
+					ORDER BY p.ID DESC",
+					'_bwo_failed',
+					'image/jpeg',
+					'image/png',
+					'image/jpg'
 				)
 			);
 		}
 
-		// All eligible
+		// 'all': all eligible non-WebP images (JPEG/PNG) that have not yet been converted
 		return $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk processing requires fresh uncached data.
 			$wpdb->prepare(
 				"SELECT p.ID FROM {$wpdb->posts} p
 				LEFT JOIN {$wpdb->postmeta} pm_conv ON (p.ID = pm_conv.post_id AND pm_conv.meta_key = '_bwo_converted')
 				WHERE p.post_type = 'attachment' 
-				AND (p.post_mime_type IN (%s, %s, %s) OR pm_conv.meta_value = '1')
+				AND p.post_mime_type IN (%s, %s, %s)
+				AND pm_conv.meta_value IS NULL
 				ORDER BY p.ID DESC",
 				'image/jpeg',
 				'image/png',
