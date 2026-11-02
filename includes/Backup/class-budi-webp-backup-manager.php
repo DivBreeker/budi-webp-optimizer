@@ -84,7 +84,7 @@ class BUDI_WebP_Backup_Manager {
 	 * @return bool
 	 */
 	public static function has_backup( $attachment_id ) {
-		$backup = get_post_meta( $attachment_id, self::META_BACKUP_DATA, true );
+		$backup = self::get_backup( $attachment_id );
 		if ( empty( $backup ) || empty( $backup['backup_path'] ) ) {
 			return false;
 		}
@@ -116,8 +116,9 @@ class BUDI_WebP_Backup_Manager {
 		$limit = absint( $limit );
 		return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Backup list must always reflect the current live state.
 			$wpdb->prepare(
-				"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = %s ORDER BY post_id DESC LIMIT %d",
+				"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key IN (%s, %s) ORDER BY post_id DESC LIMIT %d",
 				self::META_BACKUP_DATA,
+				'_bwo_backup_data',
 				$limit
 			),
 			ARRAY_A

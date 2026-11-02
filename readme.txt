@@ -4,7 +4,7 @@ Tags: webp, image optimizer, performance, compression, media library
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,11 @@ No. Admin scripts and styles are strictly loaded on the plugin's WordPress admin
 6. Diagnostic Reports screen with server WebP environment status and real-time Activity Logs.
 
 == Changelog ==
+
+= 1.0.6 =
+* Fixed asset enqueuing hooks across all subpages (Media Library, Bulk Convert, Settings, Backups, and Reports) to ensure styles and scripts load consistently.
+* Restored backup deletion and 1-click restore actions on the Backups management page.
+* Enhanced backward compatibility in Backup Manager to seamlessly query legacy backup data.
 
 = 1.0.5 =
 * Resolved all WordPress.NamingConventions.PrefixAllGlobals warnings in Plugin Check by prefixing all template-level variables and functions with the plugin slug prefix.

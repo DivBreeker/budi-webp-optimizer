@@ -46,14 +46,21 @@ class BUDI_WebP_Admin {
 	public static function enqueue_assets( $hook ) {
 		$plugin_pages = array(
 			'toplevel_page_budi-webp-optimizer',
-			'webp-optimizer_page_bwo-media-library',
-			'webp-optimizer_page_bwo-bulk-convert',
-			'webp-optimizer_page_bwo-settings',
-			'webp-optimizer_page_bwo-backups',
-			'webp-optimizer_page_bwo-reports',
+			'webp-optimizer_page_budi-webp-media-library',
+			'webp-optimizer_page_budi-webp-bulk-convert',
+			'webp-optimizer_page_budi-webp-settings',
+			'webp-optimizer_page_budi-webp-backups',
+			'webp-optimizer_page_budi-webp-reports',
+			'admin_page_budi-webp-media-library',
+			'admin_page_budi-webp-bulk-convert',
+			'admin_page_budi-webp-settings',
+			'admin_page_budi-webp-backups',
+			'admin_page_budi-webp-reports',
 		);
 
-		if ( ! in_array( $hook, $plugin_pages, true ) ) {
+		$is_plugin_page = in_array( $hook, $plugin_pages, true ) || ( false !== strpos( $hook, 'budi-webp' ) );
+
+		if ( ! $is_plugin_page ) {
 			return;
 		}
 
