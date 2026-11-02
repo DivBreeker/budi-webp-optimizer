@@ -9,9 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$summary = BUDI_WebP_Media_Scanner::get_summary_stats();
-$server  = BUDI_WebP_Server_Check::get_report();
-$logs    = BUDI_WebP_Logger::get_logs();
+$budi_webp_optimizer_summary = BUDI_WebP_Media_Scanner::get_summary_stats();
+$budi_webp_optimizer_server  = BUDI_WebP_Server_Check::get_report();
+$budi_webp_optimizer_logs    = BUDI_WebP_Logger::get_logs();
 ?>
 
 <div class="bwo-wrap">
@@ -47,24 +47,24 @@ $logs    = BUDI_WebP_Logger::get_logs();
 		<div class="bwo-card">
 			<h3 class="bwo-card-title"><?php esc_html_e( 'Storage Performance Summary', 'budi-webp-optimizer' ); ?></h3>
 			<ul class="bwo-report-list">
-				<li><span><?php esc_html_e( 'Total Media Images:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( number_format_i18n( $summary['total_images'] ) ); ?></strong></li>
-				<li><span><?php esc_html_e( 'Images Converted to WebP:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( number_format_i18n( $summary['converted_images'] ) ); ?></strong></li>
-				<li><span><?php esc_html_e( 'Original Storage Occupied:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $summary['original_size_f'] ); ?></strong></li>
-				<li><span><?php esc_html_e( 'Current Storage Occupied:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $summary['current_size_f'] ); ?></strong></li>
-				<li><span><?php esc_html_e( 'Total Server Space Saved:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success bwo-font-lg"><?php echo esc_html( $summary['storage_saved_f'] ); ?></strong></li>
-				<li><span><?php esc_html_e( 'Average Size Reduction:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( $summary['reduction_label'] ); ?></strong></li>
+				<li><span><?php esc_html_e( 'Total Media Images:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['total_images'] ) ); ?></strong></li>
+				<li><span><?php esc_html_e( 'Images Converted to WebP:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['converted_images'] ) ); ?></strong></li>
+				<li><span><?php esc_html_e( 'Original Storage Occupied:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_summary['original_size_f'] ); ?></strong></li>
+				<li><span><?php esc_html_e( 'Current Storage Occupied:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_summary['current_size_f'] ); ?></strong></li>
+				<li><span><?php esc_html_e( 'Total Server Space Saved:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success bwo-font-lg"><?php echo esc_html( $budi_webp_optimizer_summary['storage_saved_f'] ); ?></strong></li>
+				<li><span><?php esc_html_e( 'Average Size Reduction:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( $budi_webp_optimizer_summary['reduction_label'] ); ?></strong></li>
 			</ul>
 		</div>
 
 		<div class="bwo-card">
 			<h3 class="bwo-card-title"><?php esc_html_e( 'Server Environment Diagnostics', 'budi-webp-optimizer' ); ?></h3>
 			<ul class="bwo-report-list">
-				<li><span><?php esc_html_e( 'WebP Engine:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( $server['active_engine'] ); ?></strong></li>
-				<li><span><?php esc_html_e( 'PHP Version:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['php_version'] ); ?></strong></li>
-				<li><span><?php esc_html_e( 'GD Extension:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['gd_webp'] ? __( 'Supported', 'budi-webp-optimizer' ) : __( 'Unavailable', 'budi-webp-optimizer' ) ); ?></strong></li>
-				<li><span><?php esc_html_e( 'PHP Imagick WebP:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['imagick_webp'] ? __( 'Supported', 'budi-webp-optimizer' ) : __( 'Unavailable', 'budi-webp-optimizer' ) ); ?></strong></li>
-				<li><span><?php esc_html_e( 'Memory Limit:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['memory_limit'] ); ?></strong></li>
-				<li><span><?php esc_html_e( 'Max Execution Time:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['max_execution_time'] ); ?>s</strong></li>
+				<li><span><?php esc_html_e( 'WebP Engine:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( $budi_webp_optimizer_server['active_engine'] ); ?></strong></li>
+				<li><span><?php esc_html_e( 'PHP Version:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_server['php_version'] ); ?></strong></li>
+				<li><span><?php esc_html_e( 'GD Extension:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_server['gd_webp'] ? __( 'Supported', 'budi-webp-optimizer' ) : __( 'Unavailable', 'budi-webp-optimizer' ) ); ?></strong></li>
+				<li><span><?php esc_html_e( 'PHP Imagick WebP:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_server['imagick_webp'] ? __( 'Supported', 'budi-webp-optimizer' ) : __( 'Unavailable', 'budi-webp-optimizer' ) ); ?></strong></li>
+				<li><span><?php esc_html_e( 'Memory Limit:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_server['memory_limit'] ); ?></strong></li>
+				<li><span><?php esc_html_e( 'Max Execution Time:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_server['max_execution_time'] ); ?>s</strong></li>
 			</ul>
 		</div>
 	</div>
@@ -94,16 +94,16 @@ $logs    = BUDI_WebP_Logger::get_logs();
 					</tr>
 				</thead>
 				<tbody id="bwo-reports-logs-tbody">
-					<?php if ( empty( $logs ) ) : ?>
+					<?php if ( empty( $budi_webp_optimizer_logs ) ) : ?>
 						<tr>
 							<td colspan="3" class="bwo-td-empty"><?php esc_html_e( 'No recent activity logs found. Optimization actions will appear here in real-time.', 'budi-webp-optimizer' ); ?></td>
 						</tr>
 					<?php else : ?>
-						<?php foreach ( array_reverse( $logs ) as $log ) : ?>
+						<?php foreach ( array_reverse( $budi_webp_optimizer_logs ) as $budi_webp_optimizer_log ) : ?>
 							<tr>
-								<td style="white-space: nowrap; color: #64748b; font-size: 12px;"><?php echo esc_html( BUDI_WebP_Formatting::format_date( $log['time'] ) ); ?></td>
-								<td><span class="bwo-badge bwo-badge-<?php echo esc_attr( $log['level'] ); ?>"><?php echo esc_html( strtoupper( $log['level'] ) ); ?></span></td>
-								<td style="color: #0f172a; font-weight: 500;"><?php echo esc_html( $log['message'] ); ?></td>
+								<td style="white-space: nowrap; color: #64748b; font-size: 12px;"><?php echo esc_html( BUDI_WebP_Formatting::format_date( $budi_webp_optimizer_log['time'] ) ); ?></td>
+								<td><span class="bwo-badge bwo-badge-<?php echo esc_attr( $budi_webp_optimizer_log['level'] ); ?>"><?php echo esc_html( strtoupper( $budi_webp_optimizer_log['level'] ) ); ?></span></td>
+								<td style="color: #0f172a; font-weight: 500;"><?php echo esc_html( $budi_webp_optimizer_log['message'] ); ?></td>
 							</tr>
 						<?php endforeach; ?>
 					<?php endif; ?>

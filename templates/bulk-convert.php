@@ -9,9 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$summary  = BUDI_WebP_Media_Scanner::get_summary_stats();
-$settings = BUDI_WebP_Settings::get_settings();
-$server   = BUDI_WebP_Server_Check::get_report();
+$budi_webp_optimizer_summary  = BUDI_WebP_Media_Scanner::get_summary_stats();
+$budi_webp_optimizer_settings = BUDI_WebP_Settings::get_settings();
+$budi_webp_optimizer_server   = BUDI_WebP_Server_Check::get_report();
 ?>
 
 <div class="bwo-wrap">
@@ -49,7 +49,7 @@ $server   = BUDI_WebP_Server_Check::get_report();
 		</div>
 	</div>
 
-	<?php if ( ! $server['supports_webp'] ) : ?>
+	<?php if ( ! $budi_webp_optimizer_server['supports_webp'] ) : ?>
 		<div class="bwo-alert bwo-alert-danger">
 			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
 			<div>
@@ -69,7 +69,7 @@ $server   = BUDI_WebP_Server_Check::get_report();
 				<label class="bwo-radio-card selected">
 					<input type="radio" name="bulk_scope" value="all" checked />
 					<div class="bwo-radio-content">
-						<strong><?php esc_html_e( 'Convert All Eligible Images', 'budi-webp-optimizer' ); ?> (<?php echo esc_html( number_format_i18n( $summary['total_images'] ) ); ?> <?php esc_html_e( 'images', 'budi-webp-optimizer' ); ?>)</strong>
+						<strong><?php esc_html_e( 'Convert All Eligible Images', 'budi-webp-optimizer' ); ?> (<?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['total_images'] ) ); ?> <?php esc_html_e( 'images', 'budi-webp-optimizer' ); ?>)</strong>
 						<span><?php esc_html_e( 'Process every JPEG and PNG in your Media Library to ensure 100% WebP coverage.', 'budi-webp-optimizer' ); ?></span>
 					</div>
 				</label>
@@ -77,16 +77,16 @@ $server   = BUDI_WebP_Server_Check::get_report();
 				<label class="bwo-radio-card">
 					<input type="radio" name="bulk_scope" value="pending_only" />
 					<div class="bwo-radio-content">
-						<strong><?php esc_html_e( 'Convert Pending Images Only', 'budi-webp-optimizer' ); ?> (<?php echo esc_html( number_format_i18n( $summary['pending_images'] ) ); ?> <?php esc_html_e( 'pending', 'budi-webp-optimizer' ); ?>)</strong>
+						<strong><?php esc_html_e( 'Convert Pending Images Only', 'budi-webp-optimizer' ); ?> (<?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['pending_images'] ) ); ?> <?php esc_html_e( 'pending', 'budi-webp-optimizer' ); ?>)</strong>
 						<span><?php esc_html_e( 'Fast and efficient: only processes images that have not yet been optimized.', 'budi-webp-optimizer' ); ?></span>
 					</div>
 				</label>
 
-				<?php if ( $summary['failed_images'] > 0 ) : ?>
+				<?php if ( $budi_webp_optimizer_summary['failed_images'] > 0 ) : ?>
 					<label class="bwo-radio-card">
 						<input type="radio" name="bulk_scope" value="failed_only" />
 						<div class="bwo-radio-content">
-							<strong><?php esc_html_e( 'Retry Failed Images Only', 'budi-webp-optimizer' ); ?> (<?php echo esc_html( number_format_i18n( $summary['failed_images'] ) ); ?> <?php esc_html_e( 'failed', 'budi-webp-optimizer' ); ?>)</strong>
+							<strong><?php esc_html_e( 'Retry Failed Images Only', 'budi-webp-optimizer' ); ?> (<?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['failed_images'] ) ); ?> <?php esc_html_e( 'failed', 'budi-webp-optimizer' ); ?>)</strong>
 							<span><?php esc_html_e( 'Attempts to re-encode only images that previously threw errors.', 'budi-webp-optimizer' ); ?></span>
 						</div>
 					</label>
@@ -99,14 +99,14 @@ $server   = BUDI_WebP_Server_Check::get_report();
 						<h3 style="font-size: 15px; margin: 0; font-weight: 700;"><?php esc_html_e( 'WebP Quality', 'budi-webp-optimizer' ); ?></h3>
 						<span style="font-size: 12px; color: #64748b;"><?php esc_html_e( 'Compression factor for generated WebP files.', 'budi-webp-optimizer' ); ?></span>
 					</div>
-					<span class="bwo-slider-val-badge" id="bwo-quality-display"><?php echo esc_html( $settings['quality'] ); ?>%</span>
+					<span class="bwo-slider-val-badge" id="bwo-quality-display"><?php echo esc_html( $budi_webp_optimizer_settings['quality'] ); ?>%</span>
 				</div>
-				<input type="range" name="quality" id="bwo-quality-slider" min="50" max="100" value="<?php echo esc_attr( $settings['quality'] ); ?>" class="bwo-range-slider" />
+				<input type="range" name="quality" id="bwo-quality-slider" min="50" max="100" value="<?php echo esc_attr( $budi_webp_optimizer_settings['quality'] ); ?>" class="bwo-range-slider" />
 			</div>
 
 			<div style="margin-bottom: 20px;">
 				<label class="bwo-switch-row">
-					<input type="checkbox" name="bulk_keep_backup" id="bwo-bulk-keep-backup" value="1" <?php checked( $settings['keep_backup'], 1 ); ?> />
+					<input type="checkbox" name="bulk_keep_backup" id="bwo-bulk-keep-backup" value="1" <?php checked( $budi_webp_optimizer_settings['keep_backup'], 1 ); ?> />
 					<div>
 						<strong><?php esc_html_e( 'Keep recoverable backup of original files', 'budi-webp-optimizer' ); ?></strong>
 						<span style="font-size: 12px; color: #64748b;"><?php esc_html_e( 'Uncheck if you do NOT want to store backup copies in the server backup directory.', 'budi-webp-optimizer' ); ?></span>

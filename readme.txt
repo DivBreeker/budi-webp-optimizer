@@ -4,7 +4,7 @@ Tags: webp, image optimizer, performance, compression, media library
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,10 @@ No. Admin scripts and styles are strictly loaded on the plugin's WordPress admin
 6. Diagnostic Reports screen with server WebP environment status and real-time Activity Logs.
 
 == Changelog ==
+
+= 1.0.5 =
+* Resolved all WordPress.NamingConventions.PrefixAllGlobals warnings in Plugin Check by prefixing all template-level variables and functions with the plugin slug prefix.
+* Cleaned up initialization function and uninstall script variables.
 
 = 1.0.4 =
 * Refactored all PHP declarations, classes, constants, options, transients, postmeta, nonces, and AJAX hooks to strict 4+ character prefixes (budi_webp_ and BUDI_WebP_) in compliance with WordPress.org Plugin Directory guidelines.

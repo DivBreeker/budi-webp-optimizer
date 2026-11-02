@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$settings = BUDI_WebP_Settings::get_settings();
+$budi_webp_optimizer_settings = BUDI_WebP_Settings::get_settings();
 ?>
 
 <div class="bwo-wrap">
@@ -48,16 +48,16 @@ $settings = BUDI_WebP_Settings::get_settings();
 				<p class="bwo-desc"><?php esc_html_e( 'Choose how original image files and WordPress attachment records should be modified.', 'budi-webp-optimizer' ); ?></p>
 
 				<div class="bwo-radio-cards">
-					<label class="bwo-radio-card <?php echo esc_attr( 'keep' === $settings['conversion_mode'] ? 'selected' : '' ); ?>">
-						<input type="radio" name="conversion_mode" value="keep" <?php checked( $settings['conversion_mode'], 'keep' ); ?> />
+					<label class="bwo-radio-card <?php echo esc_attr( 'keep' === $budi_webp_optimizer_settings['conversion_mode'] ? 'selected' : '' ); ?>">
+						<input type="radio" name="conversion_mode" value="keep" <?php checked( $budi_webp_optimizer_settings['conversion_mode'], 'keep' ); ?> />
 						<div class="bwo-radio-content">
 							<strong><?php esc_html_e( 'Keep original and create WebP', 'budi-webp-optimizer' ); ?></strong>
 							<span><?php esc_html_e( 'Converts images to WebP and safely stores original files in Backups for 1-click restore.', 'budi-webp-optimizer' ); ?></span>
 						</div>
 					</label>
 
-					<label class="bwo-radio-card <?php echo esc_attr( 'replace' === $settings['conversion_mode'] ? 'selected' : '' ); ?>">
-						<input type="radio" name="conversion_mode" value="replace" <?php checked( $settings['conversion_mode'], 'replace' ); ?> />
+					<label class="bwo-radio-card <?php echo esc_attr( 'replace' === $budi_webp_optimizer_settings['conversion_mode'] ? 'selected' : '' ); ?>">
+						<input type="radio" name="conversion_mode" value="replace" <?php checked( $budi_webp_optimizer_settings['conversion_mode'], 'replace' ); ?> />
 						<div class="bwo-radio-content">
 							<strong><?php esc_html_e( 'Replace original with WebP', 'budi-webp-optimizer' ); ?></strong>
 							<span><?php esc_html_e( 'Replaces original with WebP and auto-deletes original files without saving backup, maximizing server storage.', 'budi-webp-optimizer' ); ?></span>
@@ -72,15 +72,15 @@ $settings = BUDI_WebP_Settings::get_settings();
 						<h3><?php esc_html_e( 'WebP Quality', 'budi-webp-optimizer' ); ?></h3>
 						<p class="bwo-desc"><?php esc_html_e( 'WebP compression quality (50% to 100%). Default: 85%.', 'budi-webp-optimizer' ); ?></p>
 					</div>
-					<span class="bwo-slider-val-badge" id="bwo-quality-display-2"><?php echo esc_html( $settings['quality'] ); ?>%</span>
+					<span class="bwo-slider-val-badge" id="bwo-quality-display-2"><?php echo esc_html( $budi_webp_optimizer_settings['quality'] ); ?>%</span>
 				</div>
 
-				<input type="range" name="quality" id="bwo-quality-slider-2" min="50" max="100" value="<?php echo esc_attr( $settings['quality'] ); ?>" class="bwo-range-slider" />
+				<input type="range" name="quality" id="bwo-quality-slider-2" min="50" max="100" value="<?php echo esc_attr( $budi_webp_optimizer_settings['quality'] ); ?>" class="bwo-range-slider" />
 				
 				<div class="bwo-slider-ticks">
-					<span class="bwo-tick-btn <?php echo esc_attr( 75 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="75"><?php esc_html_e( 'Smaller file (75%)', 'budi-webp-optimizer' ); ?></span>
-					<span class="bwo-tick-btn <?php echo esc_attr( 85 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="85"><?php esc_html_e( 'Balanced (85%)', 'budi-webp-optimizer' ); ?></span>
-					<span class="bwo-tick-btn <?php echo esc_attr( 96 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="96"><?php esc_html_e( 'Highest quality (96%)', 'budi-webp-optimizer' ); ?></span>
+					<span class="bwo-tick-btn <?php echo esc_attr( 75 === (int) $budi_webp_optimizer_settings['quality'] ? 'active' : '' ); ?>" data-val="75"><?php esc_html_e( 'Smaller file (75%)', 'budi-webp-optimizer' ); ?></span>
+					<span class="bwo-tick-btn <?php echo esc_attr( 85 === (int) $budi_webp_optimizer_settings['quality'] ? 'active' : '' ); ?>" data-val="85"><?php esc_html_e( 'Balanced (85%)', 'budi-webp-optimizer' ); ?></span>
+					<span class="bwo-tick-btn <?php echo esc_attr( 96 === (int) $budi_webp_optimizer_settings['quality'] ? 'active' : '' ); ?>" data-val="96"><?php esc_html_e( 'Highest quality (96%)', 'budi-webp-optimizer' ); ?></span>
 				</div>
 			</div>
 
@@ -88,7 +88,7 @@ $settings = BUDI_WebP_Settings::get_settings();
 				<h3><?php esc_html_e( 'Automation & Backups', 'budi-webp-optimizer' ); ?></h3>
 
 				<label class="bwo-switch-row">
-					<input type="checkbox" name="keep_backup" value="1" <?php checked( $settings['keep_backup'], 1 ); ?> />
+					<input type="checkbox" name="keep_backup" value="1" <?php checked( $budi_webp_optimizer_settings['keep_backup'], 1 ); ?> />
 					<div>
 						<strong><?php esc_html_e( 'Keep recoverable backup of original files', 'budi-webp-optimizer' ); ?></strong>
 						<span><?php esc_html_e( 'Safely stores untouched JPG/PNG copies in a protected folder for instant 1-click restore. If unchecked, original copies will NOT be backed up to server storage.', 'budi-webp-optimizer' ); ?></span>
@@ -96,7 +96,7 @@ $settings = BUDI_WebP_Settings::get_settings();
 				</label>
 
 				<label class="bwo-switch-row">
-					<input type="checkbox" name="auto_convert" value="1" <?php checked( $settings['auto_convert'], 1 ); ?> />
+					<input type="checkbox" name="auto_convert" value="1" <?php checked( $budi_webp_optimizer_settings['auto_convert'], 1 ); ?> />
 					<div>
 						<strong><?php esc_html_e( 'Auto-convert new uploads', 'budi-webp-optimizer' ); ?></strong>
 						<span><?php esc_html_e( 'Instantly generate WebP files whenever new images are uploaded to the WordPress Media Library.', 'budi-webp-optimizer' ); ?></span>
@@ -104,7 +104,7 @@ $settings = BUDI_WebP_Settings::get_settings();
 				</label>
 
 				<label class="bwo-switch-row">
-					<input type="checkbox" name="convert_thumbnails" value="1" <?php checked( $settings['convert_thumbnails'], 1 ); ?> />
+					<input type="checkbox" name="convert_thumbnails" value="1" <?php checked( $budi_webp_optimizer_settings['convert_thumbnails'], 1 ); ?> />
 					<div>
 						<strong><?php esc_html_e( 'Optimize intermediate thumbnail sizes', 'budi-webp-optimizer' ); ?></strong>
 						<span><?php esc_html_e( 'Also compress and optimize all thumbnail sizes generated by WordPress and WooCommerce.', 'budi-webp-optimizer' ); ?></span>
@@ -120,14 +120,14 @@ $settings = BUDI_WebP_Settings::get_settings();
 						<?php esc_html_e( 'Bulk Batch Size', 'budi-webp-optimizer' ); ?>
 					</label>
 					<select name="batch_size" class="bwo-select" style="padding: 6px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px;">
-						<option value="3" <?php selected( $settings['batch_size'], 3 ); ?>>3 <?php esc_html_e( 'images per batch (Low-resource shared hosts)', 'budi-webp-optimizer' ); ?></option>
-						<option value="5" <?php selected( $settings['batch_size'], 5 ); ?>>5 <?php esc_html_e( 'images per batch (Recommended)', 'budi-webp-optimizer' ); ?></option>
-						<option value="10" <?php selected( $settings['batch_size'], 10 ); ?>>10 <?php esc_html_e( 'images per batch (Fast VPS / Dedicated)', 'budi-webp-optimizer' ); ?></option>
+						<option value="3" <?php selected( $budi_webp_optimizer_settings['batch_size'], 3 ); ?>>3 <?php esc_html_e( 'images per batch (Low-resource shared hosts)', 'budi-webp-optimizer' ); ?></option>
+						<option value="5" <?php selected( $budi_webp_optimizer_settings['batch_size'], 5 ); ?>>5 <?php esc_html_e( 'images per batch (Recommended)', 'budi-webp-optimizer' ); ?></option>
+						<option value="10" <?php selected( $budi_webp_optimizer_settings['batch_size'], 10 ); ?>>10 <?php esc_html_e( 'images per batch (Fast VPS / Dedicated)', 'budi-webp-optimizer' ); ?></option>
 					</select>
 				</div>
 
 				<label class="bwo-switch-row">
-					<input type="checkbox" name="debug_log" value="1" <?php checked( $settings['debug_log'], 1 ); ?> />
+					<input type="checkbox" name="debug_log" value="1" <?php checked( $budi_webp_optimizer_settings['debug_log'], 1 ); ?> />
 					<div>
 						<strong><?php esc_html_e( 'Enable Detailed Diagnostic Logging', 'budi-webp-optimizer' ); ?></strong>
 						<span><?php esc_html_e( 'Logs internal technical details to the PHP error log for troubleshooting.', 'budi-webp-optimizer' ); ?></span>

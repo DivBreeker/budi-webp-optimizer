@@ -3,7 +3,7 @@
  * Plugin Name:       BUDI WebP Optimizer
  * Plugin URI:        https://github.com/DivBreeker/budi-webp-optimizer
  * Description:       Convert smarter. Load faster. Ultra-lightweight WordPress WebP image optimizer with safe backup rollback and WooCommerce support.
- * Version:           1.0.4
+ * Version:           1.0.5
  * Author:            BUDI Studio
  * Author URI:        https://budistudio.vercel.app/
  * License:           GPL-2.0+
@@ -22,7 +22,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Current plugin version and paths.
  */
-define( 'BUDI_WEBP_VERSION', '1.0.4' );
+define( 'BUDI_WEBP_VERSION', '1.0.5' );
 define( 'BUDI_WEBP_PLUGIN_NAME', 'budi-webp-optimizer' );
 define( 'BUDI_WEBP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BUDI_WEBP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -66,8 +66,7 @@ register_deactivation_hook( __FILE__, array( 'BUDI_WebP_Deactivator', 'deactivat
 /**
  * Initialize and run plugin.
  */
-function run_budi_webp_optimizer() {
-	$plugin = BUDI_WebP_Plugin::get_instance();
-	$plugin->run();
+function budi_webp_optimizer_run() {
+	BUDI_WebP_Plugin::get_instance()->run();
 }
-run_budi_webp_optimizer();
+budi_webp_optimizer_run();

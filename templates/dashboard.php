@@ -9,10 +9,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$summary  = BUDI_WebP_Media_Scanner::get_summary_stats();
-$server   = BUDI_WebP_Server_Check::get_report();
-$settings = BUDI_WebP_Settings::get_settings();
-$logs     = BUDI_WebP_Logger::get_logs();
+$budi_webp_optimizer_summary  = BUDI_WebP_Media_Scanner::get_summary_stats();
+$budi_webp_optimizer_server   = BUDI_WebP_Server_Check::get_report();
+$budi_webp_optimizer_settings = BUDI_WebP_Settings::get_settings();
+$budi_webp_optimizer_logs     = BUDI_WebP_Logger::get_logs();
 ?>
 
 <div class="bwo-wrap">
@@ -52,7 +52,7 @@ $logs     = BUDI_WebP_Logger::get_logs();
 		</div>
 	</div>
 
-	<?php if ( ! $server['supports_webp'] ) : ?>
+	<?php if ( ! $budi_webp_optimizer_server['supports_webp'] ) : ?>
 		<div class="bwo-alert bwo-alert-danger">
 			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
 			<div>
@@ -71,7 +71,7 @@ $logs     = BUDI_WebP_Logger::get_logs();
 			</div>
 			<div class="bwo-stat-content">
 				<span class="bwo-stat-label"><?php esc_html_e( 'Total Images', 'budi-webp-optimizer' ); ?></span>
-				<div class="bwo-stat-value" id="bwo-stat-total"><?php echo esc_html( number_format_i18n( $summary['total_images'] ) ); ?></div>
+				<div class="bwo-stat-value" id="bwo-stat-total"><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['total_images'] ) ); ?></div>
 				<span class="bwo-stat-subtext"><?php esc_html_e( 'JPG, PNG and others', 'budi-webp-optimizer' ); ?></span>
 			</div>
 		</div>
@@ -83,8 +83,8 @@ $logs     = BUDI_WebP_Logger::get_logs();
 			</div>
 			<div class="bwo-stat-content">
 				<span class="bwo-stat-label"><?php esc_html_e( 'Converted to WebP', 'budi-webp-optimizer' ); ?></span>
-				<div class="bwo-stat-value" id="bwo-stat-converted"><?php echo esc_html( number_format_i18n( $summary['converted_images'] ) ); ?></div>
-				<span class="bwo-stat-subtext bwo-text-success" id="bwo-stat-percent"><?php echo esc_html( $summary['percent_completed'] ); ?>% <?php esc_html_e( 'completed', 'budi-webp-optimizer' ); ?></span>
+				<div class="bwo-stat-value" id="bwo-stat-converted"><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['converted_images'] ) ); ?></div>
+				<span class="bwo-stat-subtext bwo-text-success" id="bwo-stat-percent"><?php echo esc_html( $budi_webp_optimizer_summary['percent_completed'] ); ?>% <?php esc_html_e( 'completed', 'budi-webp-optimizer' ); ?></span>
 			</div>
 		</div>
 
@@ -95,8 +95,8 @@ $logs     = BUDI_WebP_Logger::get_logs();
 			</div>
 			<div class="bwo-stat-content">
 				<span class="bwo-stat-label"><?php esc_html_e( 'Storage Saved', 'budi-webp-optimizer' ); ?></span>
-				<div class="bwo-stat-value" id="bwo-stat-saved"><?php echo esc_html( $summary['storage_saved_f'] ); ?></div>
-				<span class="bwo-stat-subtext" id="bwo-stat-reduction"><?php echo esc_html( $summary['reduction_label'] ); ?></span>
+				<div class="bwo-stat-value" id="bwo-stat-saved"><?php echo esc_html( $budi_webp_optimizer_summary['storage_saved_f'] ); ?></div>
+				<span class="bwo-stat-subtext" id="bwo-stat-reduction"><?php echo esc_html( $budi_webp_optimizer_summary['reduction_label'] ); ?></span>
 			</div>
 		</div>
 
@@ -107,7 +107,7 @@ $logs     = BUDI_WebP_Logger::get_logs();
 			</div>
 			<div class="bwo-stat-content">
 				<span class="bwo-stat-label"><?php esc_html_e( 'Pending Images', 'budi-webp-optimizer' ); ?></span>
-				<div class="bwo-stat-value" id="bwo-stat-pending"><?php echo esc_html( number_format_i18n( $summary['pending_images'] ) ); ?></div>
+				<div class="bwo-stat-value" id="bwo-stat-pending"><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['pending_images'] ) ); ?></div>
 				<span class="bwo-stat-subtext"><?php esc_html_e( 'Not yet converted', 'budi-webp-optimizer' ); ?></span>
 			</div>
 		</div>
@@ -123,13 +123,13 @@ $logs     = BUDI_WebP_Logger::get_logs();
 				<!-- Donut Gauge Chart -->
 				<div class="bwo-donut-container">
 					<svg class="bwo-donut-svg" viewBox="0 0 100 100">
-						<circle class="bwo-donut-meter" cx="50" cy="50" r="40" stroke="#f1f5f9" stroke-width="8" fill="none" />
+					<circle class="bwo-donut-meter" cx="50" cy="50" r="40" stroke="#f1f5f9" stroke-width="8" fill="none" />
 						<circle class="bwo-donut-value" id="bwo-donut-circle" cx="50" cy="50" r="40" stroke="#10b981" stroke-width="8" stroke-linecap="round" fill="none"
 							stroke-dasharray="251.2"
-							stroke-dashoffset="<?php echo esc_attr( 251.2 - ( 251.2 * ( $summary['percent_completed'] / 100 ) ) ); ?>" />
+							stroke-dashoffset="<?php echo esc_attr( 251.2 - ( 251.2 * ( $budi_webp_optimizer_summary['percent_completed'] / 100 ) ) ); ?>" />
 					</svg>
 					<div class="bwo-donut-inner">
-						<span class="bwo-donut-number" id="bwo-donut-pct"><?php echo esc_html( $summary['percent_donut'] ); ?>%</span>
+						<span class="bwo-donut-number" id="bwo-donut-pct"><?php echo esc_html( $budi_webp_optimizer_summary['percent_donut'] ); ?>%</span>
 						<span class="bwo-donut-label"><?php esc_html_e( 'Converted', 'budi-webp-optimizer' ); ?></span>
 					</div>
 				</div>
@@ -139,17 +139,17 @@ $logs     = BUDI_WebP_Logger::get_logs();
 					<div class="bwo-legend-row">
 						<span class="bwo-legend-bullet bwo-bullet-green"></span>
 						<span class="bwo-legend-name"><?php esc_html_e( 'Converted to WebP', 'budi-webp-optimizer' ); ?></span>
-						<span class="bwo-legend-count" id="bwo-legend-conv"><?php echo esc_html( number_format_i18n( $summary['converted_images'] ) ); ?></span>
+						<span class="bwo-legend-count" id="bwo-legend-conv"><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['converted_images'] ) ); ?></span>
 					</div>
 					<div class="bwo-legend-row">
 						<span class="bwo-legend-bullet bwo-bullet-gray"></span>
 						<span class="bwo-legend-name"><?php esc_html_e( 'Pending', 'budi-webp-optimizer' ); ?></span>
-						<span class="bwo-legend-count" id="bwo-legend-pend"><?php echo esc_html( number_format_i18n( $summary['pending_images'] ) ); ?></span>
+						<span class="bwo-legend-count" id="bwo-legend-pend"><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['pending_images'] ) ); ?></span>
 					</div>
 					<div class="bwo-legend-row">
 						<span class="bwo-legend-bullet bwo-bullet-red"></span>
 						<span class="bwo-legend-name"><?php esc_html_e( 'Failed', 'budi-webp-optimizer' ); ?></span>
-						<span class="bwo-legend-count" id="bwo-legend-fail"><?php echo esc_html( number_format_i18n( $summary['failed_images'] ) ); ?></span>
+						<span class="bwo-legend-count" id="bwo-legend-fail"><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['failed_images'] ) ); ?></span>
 					</div>
 				</div>
 
@@ -157,15 +157,15 @@ $logs     = BUDI_WebP_Logger::get_logs();
 				<div class="bwo-size-metrics">
 					<div class="bwo-metric-item">
 						<span class="bwo-metric-label"><?php esc_html_e( 'Original Size', 'budi-webp-optimizer' ); ?></span>
-						<span class="bwo-metric-val" id="bwo-metric-orig"><?php echo esc_html( $summary['original_size_f'] ); ?></span>
+						<span class="bwo-metric-val" id="bwo-metric-orig"><?php echo esc_html( $budi_webp_optimizer_summary['original_size_f'] ); ?></span>
 					</div>
 					<div class="bwo-metric-item">
 						<span class="bwo-metric-label"><?php esc_html_e( 'Current Size', 'budi-webp-optimizer' ); ?></span>
-						<span class="bwo-metric-val" id="bwo-metric-curr"><?php echo esc_html( $summary['current_size_f'] ); ?></span>
+						<span class="bwo-metric-val" id="bwo-metric-curr"><?php echo esc_html( $budi_webp_optimizer_summary['current_size_f'] ); ?></span>
 					</div>
 					<div class="bwo-metric-item">
 						<span class="bwo-metric-label"><?php esc_html_e( 'Saved', 'budi-webp-optimizer' ); ?></span>
-						<span class="bwo-metric-val bwo-text-success bwo-metric-saved" id="bwo-metric-saved"><?php echo esc_html( $summary['storage_saved_f'] ); ?></span>
+						<span class="bwo-metric-val bwo-text-success bwo-metric-saved" id="bwo-metric-saved"><?php echo esc_html( $budi_webp_optimizer_summary['storage_saved_f'] ); ?></span>
 					</div>
 				</div>
 			</div>
@@ -311,16 +311,16 @@ $logs     = BUDI_WebP_Logger::get_logs();
 						<p class="bwo-desc"><?php esc_html_e( 'Choose how the plugin should handle original image files.', 'budi-webp-optimizer' ); ?></p>
 
 						<div class="bwo-radio-cards">
-							<label class="bwo-radio-card <?php echo esc_attr( 'keep' === $settings['conversion_mode'] ? 'selected' : '' ); ?>">
-								<input type="radio" name="conversion_mode" value="keep" <?php checked( $settings['conversion_mode'], 'keep' ); ?> />
+							<label class="bwo-radio-card <?php echo esc_attr( 'keep' === $budi_webp_optimizer_settings['conversion_mode'] ? 'selected' : '' ); ?>">
+								<input type="radio" name="conversion_mode" value="keep" <?php checked( $budi_webp_optimizer_settings['conversion_mode'], 'keep' ); ?> />
 								<div class="bwo-radio-content">
 									<strong><?php esc_html_e( 'Keep original and create WebP', 'budi-webp-optimizer' ); ?></strong>
 									<span><?php esc_html_e( 'Converts images to WebP and safely stores original files in Backups for 1-click restore.', 'budi-webp-optimizer' ); ?></span>
 								</div>
 							</label>
 
-							<label class="bwo-radio-card <?php echo esc_attr( 'replace' === $settings['conversion_mode'] ? 'selected' : '' ); ?>">
-								<input type="radio" name="conversion_mode" value="replace" <?php checked( $settings['conversion_mode'], 'replace' ); ?> />
+							<label class="bwo-radio-card <?php echo esc_attr( 'replace' === $budi_webp_optimizer_settings['conversion_mode'] ? 'selected' : '' ); ?>">
+								<input type="radio" name="conversion_mode" value="replace" <?php checked( $budi_webp_optimizer_settings['conversion_mode'], 'replace' ); ?> />
 								<div class="bwo-radio-content">
 									<strong><?php esc_html_e( 'Replace original with WebP', 'budi-webp-optimizer' ); ?></strong>
 									<span><?php esc_html_e( 'Replaces original with WebP and auto-deletes original files without saving backup, maximizing server storage.', 'budi-webp-optimizer' ); ?></span>
@@ -336,15 +336,15 @@ $logs     = BUDI_WebP_Logger::get_logs();
 								<h3><?php esc_html_e( 'WebP Quality', 'budi-webp-optimizer' ); ?></h3>
 								<p class="bwo-desc"><?php esc_html_e( 'Balance between smaller file size and visual fidelity.', 'budi-webp-optimizer' ); ?></p>
 							</div>
-							<span class="bwo-slider-val-badge" id="bwo-quality-display"><?php echo esc_html( $settings['quality'] ); ?>%</span>
+							<span class="bwo-slider-val-badge" id="bwo-quality-display"><?php echo esc_html( $budi_webp_optimizer_settings['quality'] ); ?>%</span>
 						</div>
 
-						<input type="range" name="quality" id="bwo-quality-slider" min="50" max="100" value="<?php echo esc_attr( $settings['quality'] ); ?>" class="bwo-range-slider" />
+						<input type="range" name="quality" id="bwo-quality-slider" min="50" max="100" value="<?php echo esc_attr( $budi_webp_optimizer_settings['quality'] ); ?>" class="bwo-range-slider" />
 						
 						<div class="bwo-slider-ticks">
-							<span class="bwo-tick-btn <?php echo esc_attr( 75 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="75"><?php esc_html_e( 'Smaller file (75%)', 'budi-webp-optimizer' ); ?></span>
-							<span class="bwo-tick-btn <?php echo esc_attr( 85 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="85"><?php esc_html_e( 'Balanced (85%)', 'budi-webp-optimizer' ); ?></span>
-							<span class="bwo-tick-btn <?php echo esc_attr( 96 === (int) $settings['quality'] ? 'active' : '' ); ?>" data-val="96"><?php esc_html_e( 'Highest quality (96%)', 'budi-webp-optimizer' ); ?></span>
+							<span class="bwo-tick-btn <?php echo esc_attr( 75 === (int) $budi_webp_optimizer_settings['quality'] ? 'active' : '' ); ?>" data-val="75"><?php esc_html_e( 'Smaller file (75%)', 'budi-webp-optimizer' ); ?></span>
+							<span class="bwo-tick-btn <?php echo esc_attr( 85 === (int) $budi_webp_optimizer_settings['quality'] ? 'active' : '' ); ?>" data-val="85"><?php esc_html_e( 'Balanced (85%)', 'budi-webp-optimizer' ); ?></span>
+							<span class="bwo-tick-btn <?php echo esc_attr( 96 === (int) $budi_webp_optimizer_settings['quality'] ? 'active' : '' ); ?>" data-val="96"><?php esc_html_e( 'Highest quality (96%)', 'budi-webp-optimizer' ); ?></span>
 						</div>
 					</div>
 
@@ -353,7 +353,7 @@ $logs     = BUDI_WebP_Logger::get_logs();
 						<h3><?php esc_html_e( 'Safety & Automation', 'budi-webp-optimizer' ); ?></h3>
 
 						<label class="bwo-switch-row">
-							<input type="checkbox" name="keep_backup" value="1" <?php checked( $settings['keep_backup'], 1 ); ?> />
+							<input type="checkbox" name="keep_backup" value="1" <?php checked( $budi_webp_optimizer_settings['keep_backup'], 1 ); ?> />
 							<div>
 								<strong><?php esc_html_e( 'Keep a recoverable backup of original files', 'budi-webp-optimizer' ); ?></strong>
 								<span><?php esc_html_e( 'Safely stores untouched JPG/PNG copies in a protected folder for instant 1-click restore. Uncheck if you do NOT want backups saved on your server.', 'budi-webp-optimizer' ); ?></span>
@@ -361,7 +361,7 @@ $logs     = BUDI_WebP_Logger::get_logs();
 						</label>
 
 						<label class="bwo-switch-row">
-							<input type="checkbox" name="auto_convert" value="1" <?php checked( $settings['auto_convert'], 1 ); ?> />
+							<input type="checkbox" name="auto_convert" value="1" <?php checked( $budi_webp_optimizer_settings['auto_convert'], 1 ); ?> />
 							<div>
 								<strong><?php esc_html_e( 'Automatic conversion on upload', 'budi-webp-optimizer' ); ?></strong>
 								<span><?php esc_html_e( 'Automatically optimize new image uploads upon insertion into Media Library.', 'budi-webp-optimizer' ); ?></span>
@@ -369,7 +369,7 @@ $logs     = BUDI_WebP_Logger::get_logs();
 						</label>
 
 						<label class="bwo-switch-row">
-							<input type="checkbox" name="convert_thumbnails" value="1" <?php checked( $settings['convert_thumbnails'], 1 ); ?> />
+							<input type="checkbox" name="convert_thumbnails" value="1" <?php checked( $budi_webp_optimizer_settings['convert_thumbnails'], 1 ); ?> />
 							<div>
 								<strong><?php esc_html_e( 'Optimize intermediate thumbnail sizes', 'budi-webp-optimizer' ); ?></strong>
 								<span><?php esc_html_e( 'Also generate WebP versions of all registered WordPress and WooCommerce thumbnail sizes.', 'budi-webp-optimizer' ); ?></span>
@@ -394,24 +394,24 @@ $logs     = BUDI_WebP_Logger::get_logs();
 					<div class="bwo-report-card">
 						<h4><?php esc_html_e( 'Server Environment', 'budi-webp-optimizer' ); ?></h4>
 						<ul class="bwo-report-list">
-							<li><span><?php esc_html_e( 'WebP Support:', 'budi-webp-optimizer' ); ?></span> <strong class="<?php echo esc_attr( $server['supports_webp'] ? 'bwo-text-success' : 'bwo-text-danger' ); ?>"><?php echo esc_html( $server['supports_webp'] ? __( 'Active', 'budi-webp-optimizer' ) : __( 'Not Supported', 'budi-webp-optimizer' ) ); ?></strong></li>
-							<li><span><?php esc_html_e( 'Active Encoder:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['active_engine'] ); ?></strong></li>
-							<li><span><?php esc_html_e( 'PHP Version:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['php_version'] ); ?></strong></li>
-							<li><span><?php esc_html_e( 'GD Extension:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['gd_webp'] ? '✓ WebP Enabled' : ( $server['has_gd'] ? 'Loaded (No WebP)' : 'Missing' ) ); ?></strong></li>
-							<li><span><?php esc_html_e( 'Imagick Extension:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['imagick_webp'] ? '✓ WebP Enabled' : ( $server['has_imagick'] ? 'Loaded (No WebP)' : 'Missing' ) ); ?></strong></li>
-							<li><span><?php esc_html_e( 'Memory Limit:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $server['memory_limit'] ); ?></strong></li>
+							<li><span><?php esc_html_e( 'WebP Support:', 'budi-webp-optimizer' ); ?></span> <strong class="<?php echo esc_attr( $budi_webp_optimizer_server['supports_webp'] ? 'bwo-text-success' : 'bwo-text-danger' ); ?>"><?php echo esc_html( $budi_webp_optimizer_server['supports_webp'] ? __( 'Active', 'budi-webp-optimizer' ) : __( 'Not Supported', 'budi-webp-optimizer' ) ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Active Encoder:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_server['active_engine'] ); ?></strong></li>
+							<li><span><?php esc_html_e( 'PHP Version:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_server['php_version'] ); ?></strong></li>
+							<li><span><?php esc_html_e( 'GD Extension:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_server['gd_webp'] ? '✓ WebP Enabled' : ( $budi_webp_optimizer_server['has_gd'] ? 'Loaded (No WebP)' : 'Missing' ) ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Imagick Extension:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_server['imagick_webp'] ? '✓ WebP Enabled' : ( $budi_webp_optimizer_server['has_imagick'] ? 'Loaded (No WebP)' : 'Missing' ) ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Memory Limit:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_server['memory_limit'] ); ?></strong></li>
 						</ul>
 					</div>
 
 					<div class="bwo-report-card">
 						<h4><?php esc_html_e( 'Storage Breakdown', 'budi-webp-optimizer' ); ?></h4>
 						<ul class="bwo-report-list">
-							<li><span><?php esc_html_e( 'Total Library Images:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( number_format_i18n( $summary['total_images'] ) ); ?></strong></li>
-							<li><span><?php esc_html_e( 'Optimized Attachments:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( number_format_i18n( $summary['converted_images'] ) ); ?></strong></li>
-							<li><span><?php esc_html_e( 'Original Library Size:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $summary['original_size_f'] ); ?></strong></li>
-							<li><span><?php esc_html_e( 'Current Optimized Size:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $summary['current_size_f'] ); ?></strong></li>
-							<li><span><?php esc_html_e( 'Total Disk Space Saved:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( $summary['storage_saved_f'] ); ?></strong></li>
-							<li><span><?php esc_html_e( 'Average Size Reduction:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( $summary['reduction_label'] ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Total Library Images:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['total_images'] ) ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Optimized Attachments:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['converted_images'] ) ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Original Library Size:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_summary['original_size_f'] ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Current Optimized Size:', 'budi-webp-optimizer' ); ?></span> <strong><?php echo esc_html( $budi_webp_optimizer_summary['current_size_f'] ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Total Disk Space Saved:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( $budi_webp_optimizer_summary['storage_saved_f'] ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Average Size Reduction:', 'budi-webp-optimizer' ); ?></span> <strong class="bwo-text-success"><?php echo esc_html( $budi_webp_optimizer_summary['reduction_label'] ); ?></strong></li>
 						</ul>
 					</div>
 				</div>
@@ -441,16 +441,16 @@ $logs     = BUDI_WebP_Logger::get_logs();
 								</tr>
 							</thead>
 							<tbody id="bwo-dashboard-logs-tbody">
-								<?php if ( empty( $logs ) ) : ?>
+								<?php if ( empty( $budi_webp_optimizer_logs ) ) : ?>
 									<tr>
 										<td colspan="3" class="bwo-td-empty"><?php esc_html_e( 'No activity logged yet. Conversion and optimization events will appear here.', 'budi-webp-optimizer' ); ?></td>
 									</tr>
 								<?php else : ?>
-									<?php foreach ( array_reverse( $logs ) as $log ) : ?>
+									<?php foreach ( array_reverse( $budi_webp_optimizer_logs ) as $budi_webp_optimizer_log ) : ?>
 										<tr>
-											<td style="white-space: nowrap; color: #64748b; font-size: 12px;"><?php echo esc_html( BUDI_WebP_Formatting::format_date( $log['time'] ) ); ?></td>
-											<td><span class="bwo-badge bwo-badge-<?php echo esc_attr( $log['level'] ); ?>"><?php echo esc_html( strtoupper( $log['level'] ) ); ?></span></td>
-											<td style="color: #0f172a; font-weight: 500;"><?php echo esc_html( $log['message'] ); ?></td>
+											<td style="white-space: nowrap; color: #64748b; font-size: 12px;"><?php echo esc_html( BUDI_WebP_Formatting::format_date( $budi_webp_optimizer_log['time'] ) ); ?></td>
+											<td><span class="bwo-badge bwo-badge-<?php echo esc_attr( $budi_webp_optimizer_log['level'] ); ?>"><?php echo esc_html( strtoupper( $budi_webp_optimizer_log['level'] ) ); ?></span></td>
+											<td style="color: #0f172a; font-weight: 500;"><?php echo esc_html( $budi_webp_optimizer_log['message'] ); ?></td>
 										</tr>
 									<?php endforeach; ?>
 								<?php endif; ?>

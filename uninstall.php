@@ -10,9 +10,9 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-$clean_on_uninstall = get_option( 'budi_webp_clean_on_uninstall', get_option( 'bwo_clean_on_uninstall', 0 ) );
+$budi_webp_optimizer_clean_on_uninstall = get_option( 'budi_webp_clean_on_uninstall', get_option( 'bwo_clean_on_uninstall', 0 ) );
 
-if ( ! empty( $clean_on_uninstall ) ) {
+if ( ! empty( $budi_webp_optimizer_clean_on_uninstall ) ) {
 	// Delete options
 	delete_option( 'budi_webp_settings' );
 	delete_option( 'budi_webp_stats_cache' );

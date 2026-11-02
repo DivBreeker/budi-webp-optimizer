@@ -1,7 +1,7 @@
 /**
  * BUDI WebP Optimizer - Admin JavaScript
  * Pure vanilla / jQuery lightweight controller.
- * Version: 1.0.4
+ * Version: 1.0.5
  */
 
 (function($) {

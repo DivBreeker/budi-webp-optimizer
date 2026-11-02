@@ -9,8 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$summary = BUDI_WebP_Media_Scanner::get_summary_stats();
-$server  = BUDI_WebP_Server_Check::get_report();
+$budi_webp_optimizer_summary = BUDI_WebP_Media_Scanner::get_summary_stats();
 ?>
 
 <div class="bwo-wrap">
@@ -60,19 +59,19 @@ $server  = BUDI_WebP_Server_Check::get_report();
 			<div style="display: flex; gap: 28px; flex-wrap: wrap;">
 				<div>
 					<span style="font-size: 12px; color: #64748b; display: block; font-weight: 500;"><?php esc_html_e( 'Total Images', 'budi-webp-optimizer' ); ?></span>
-					<strong style="font-size: 18px; color: #0f172a;" id="bwo-stat-total"><?php echo esc_html( number_format_i18n( $summary['total_images'] ) ); ?></strong>
+					<strong style="font-size: 18px; color: #0f172a;" id="bwo-stat-total"><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['total_images'] ) ); ?></strong>
 				</div>
 				<div style="border-left: 1px solid #e2e8f0; padding-left: 24px;">
 					<span style="font-size: 12px; color: #64748b; display: block; font-weight: 500;"><?php esc_html_e( 'Converted to WebP', 'budi-webp-optimizer' ); ?></span>
-					<strong style="font-size: 18px; color: #10b981;" id="bwo-stat-converted"><?php echo esc_html( number_format_i18n( $summary['converted_images'] ) ); ?> (<?php echo esc_html( $summary['percent_completed'] ); ?>%)</strong>
+					<strong style="font-size: 18px; color: #10b981;" id="bwo-stat-converted"><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['converted_images'] ) ); ?> (<?php echo esc_html( $budi_webp_optimizer_summary['percent_completed'] ); ?>%)</strong>
 				</div>
 				<div style="border-left: 1px solid #e2e8f0; padding-left: 24px;">
 					<span style="font-size: 12px; color: #64748b; display: block; font-weight: 500;"><?php esc_html_e( 'Storage Saved', 'budi-webp-optimizer' ); ?></span>
-					<strong style="font-size: 18px; color: #059669;" id="bwo-stat-saved"><?php echo esc_html( $summary['storage_saved_f'] ); ?></strong>
+					<strong style="font-size: 18px; color: #059669;" id="bwo-stat-saved"><?php echo esc_html( $budi_webp_optimizer_summary['storage_saved_f'] ); ?></strong>
 				</div>
 				<div style="border-left: 1px solid #e2e8f0; padding-left: 24px;">
 					<span style="font-size: 12px; color: #64748b; display: block; font-weight: 500;"><?php esc_html_e( 'Pending Conversion', 'budi-webp-optimizer' ); ?></span>
-					<strong style="font-size: 18px; color: #f97316;" id="bwo-stat-pending"><?php echo esc_html( number_format_i18n( $summary['pending_images'] ) ); ?></strong>
+					<strong style="font-size: 18px; color: #f97316;" id="bwo-stat-pending"><?php echo esc_html( number_format_i18n( $budi_webp_optimizer_summary['pending_images'] ) ); ?></strong>
 				</div>
 			</div>
 			<div>
