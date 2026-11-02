@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$settings = BWO_Settings::get_settings();
+$settings = BUDI_WebP_Settings::get_settings();
 ?>
 
 <div class="bwo-wrap">
@@ -24,7 +24,7 @@ $settings = BWO_Settings::get_settings();
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
 				<span><?php esc_html_e( 'Back to Dashboard', 'budi-webp-optimizer' ); ?></span>
 			</a>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=bwo-media-library' ) ); ?>" class="bwo-header-link">
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=budi-webp-media-library' ) ); ?>" class="bwo-header-link">
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
 				<span><?php esc_html_e( 'Media Library', 'budi-webp-optimizer' ); ?></span>
 			</a>
@@ -35,7 +35,7 @@ $settings = BWO_Settings::get_settings();
 		<div class="bwo-title-meta">
 			<div class="bwo-title-heading">
 				<h1><?php esc_html_e( 'Plugin Settings', 'budi-webp-optimizer' ); ?></h1>
-				<span class="bwo-version-badge">v<?php echo esc_html( BWO_VERSION ); ?></span>
+				<span class="bwo-version-badge">v<?php echo esc_html( BUDI_WEBP_VERSION ); ?></span>
 			</div>
 			<p class="bwo-subtitle"><?php esc_html_e( 'Configure WebP compression levels, conversion modes, and backup behavior.', 'budi-webp-optimizer' ); ?></p>
 		</div>

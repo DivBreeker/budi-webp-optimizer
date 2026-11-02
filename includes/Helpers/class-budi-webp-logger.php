@@ -9,9 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Logger {
+class BUDI_WebP_Logger {
 
-	const OPTION_LOGS = 'bwo_recent_logs';
+	const OPTION_LOGS = 'budi_webp_recent_logs';
 	const MAX_LOGS    = 100;
 
 	/**
@@ -22,7 +22,7 @@ class BWO_Logger {
 	 * @param array  $context
 	 */
 	public static function log( $message, $level = 'info', $context = array() ) {
-		$settings = get_option( 'bwo_settings', array() );
+		$settings = get_option( 'budi_webp_settings', array() );
 		$debug    = ! empty( $settings['debug_log'] );
 
 		// Keep a lightweight rotating buffer of logs in options for the Reports/Debug tab

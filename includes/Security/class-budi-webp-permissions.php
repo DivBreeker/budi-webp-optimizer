@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Permissions {
+class BUDI_WebP_Permissions {
 
 	const REQUIRED_CAPABILITY = 'manage_options';
 

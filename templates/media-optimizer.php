@@ -9,8 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$summary = BWO_Media_Scanner::get_summary_stats();
-$server  = BWO_Server_Check::get_report();
+$summary = BUDI_WebP_Media_Scanner::get_summary_stats();
+$server  = BUDI_WebP_Server_Check::get_report();
 ?>
 
 <div class="bwo-wrap">
@@ -26,11 +26,11 @@ $server  = BWO_Server_Check::get_report();
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
 				<span><?php esc_html_e( 'Dashboard', 'budi-webp-optimizer' ); ?></span>
 			</a>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=bwo-bulk-convert' ) ); ?>" class="bwo-header-link">
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=budi-webp-bulk-convert' ) ); ?>" class="bwo-header-link">
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
 				<span><?php esc_html_e( 'Bulk Convert', 'budi-webp-optimizer' ); ?></span>
 			</a>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=bwo-settings' ) ); ?>" class="bwo-header-link">
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=budi-webp-settings' ) ); ?>" class="bwo-header-link">
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
 				<span><?php esc_html_e( 'Settings', 'budi-webp-optimizer' ); ?></span>
 			</a>
@@ -42,7 +42,7 @@ $server  = BWO_Server_Check::get_report();
 		<div class="bwo-title-meta">
 			<div class="bwo-title-heading">
 				<h1><?php esc_html_e( 'Media Library Optimizer', 'budi-webp-optimizer' ); ?></h1>
-				<span class="bwo-version-badge">v<?php echo esc_html( BWO_VERSION ); ?></span>
+				<span class="bwo-version-badge">v<?php echo esc_html( BUDI_WEBP_VERSION ); ?></span>
 			</div>
 			<p class="bwo-subtitle"><?php esc_html_e( 'Search, filter, inspect, and optimize individual or selected media attachments in your WordPress library.', 'budi-webp-optimizer' ); ?></p>
 		</div>
@@ -76,7 +76,7 @@ $server  = BWO_Server_Check::get_report();
 				</div>
 			</div>
 			<div>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=bwo-bulk-convert' ) ); ?>" class="bwo-btn bwo-btn-green bwo-btn-sm">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=budi-webp-bulk-convert' ) ); ?>" class="bwo-btn bwo-btn-green bwo-btn-sm">
 					<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
 					<span><?php esc_html_e( 'Go to Bulk Convert', 'budi-webp-optimizer' ); ?></span>
 				</a>

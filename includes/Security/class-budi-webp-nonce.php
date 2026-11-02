@@ -9,10 +9,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Nonce {
+class BUDI_WebP_Nonce {
 
-	const ACTION = 'bwo_admin_nonce_action';
-	const KEY    = 'bwo_nonce';
+	const ACTION = 'budi_webp_nonce_action';
+	const KEY    = 'budi_webp_nonce';
 
 	/**
 	 * Create nonce token.

@@ -9,9 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Settings {
+class BUDI_WebP_Settings {
 
-	const OPTION_NAME = 'bwo_settings';
+	const OPTION_NAME = 'budi_webp_settings';
 
 	public static function get_defaults() {
 		return array(
@@ -27,7 +27,11 @@ class BWO_Settings {
 	}
 
 	public static function get_settings() {
-		$saved = get_option( self::OPTION_NAME, array() );
+		$saved = get_option( self::OPTION_NAME, null );
+		if ( null === $saved ) {
+			// Backward compatibility with legacy option key
+			$saved = get_option( 'bwo_settings', array() );
+		}
 		if ( ! is_array( $saved ) ) {
 			$saved = array();
 		}
@@ -44,7 +48,7 @@ class BWO_Settings {
 		$sanitized = array();
 
 		if ( isset( $new_settings['quality'] ) && is_numeric( $new_settings['quality'] ) ) {
-			$sanitized['quality'] = BWO_Quality::sanitize( $new_settings['quality'] );
+			$sanitized['quality'] = BUDI_WebP_Quality::sanitize( $new_settings['quality'] );
 		} else {
 			$sanitized['quality'] = $current['quality'];
 		}
@@ -69,7 +73,7 @@ class BWO_Settings {
 
 		update_option( self::OPTION_NAME, $sanitized );
 
-		BWO_Logger::log(
+		BUDI_WebP_Logger::log(
 			sprintf(
 				'Configuration saved: Mode=%s, Quality=%d%%, Backup=%s, AutoConvert=%s',
 				strtoupper( $sanitized['conversion_mode'] ),

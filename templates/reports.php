@@ -9,9 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$summary = BWO_Media_Scanner::get_summary_stats();
-$server  = BWO_Server_Check::get_report();
-$logs    = BWO_Logger::get_logs();
+$summary = BUDI_WebP_Media_Scanner::get_summary_stats();
+$server  = BUDI_WebP_Server_Check::get_report();
+$logs    = BUDI_WebP_Logger::get_logs();
 ?>
 
 <div class="bwo-wrap">
@@ -26,7 +26,7 @@ $logs    = BWO_Logger::get_logs();
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
 				<span><?php esc_html_e( 'Back to Dashboard', 'budi-webp-optimizer' ); ?></span>
 			</a>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=bwo-media-library' ) ); ?>" class="bwo-header-link">
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=budi-webp-media-library' ) ); ?>" class="bwo-header-link">
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
 				<span><?php esc_html_e( 'Media Library', 'budi-webp-optimizer' ); ?></span>
 			</a>
@@ -37,7 +37,7 @@ $logs    = BWO_Logger::get_logs();
 		<div class="bwo-title-meta">
 			<div class="bwo-title-heading">
 				<h1><?php esc_html_e( 'Optimization & Performance Reports', 'budi-webp-optimizer' ); ?></h1>
-				<span class="bwo-version-badge">v<?php echo esc_html( BWO_VERSION ); ?></span>
+				<span class="bwo-version-badge">v<?php echo esc_html( BUDI_WEBP_VERSION ); ?></span>
 			</div>
 			<p class="bwo-subtitle"><?php esc_html_e( 'Comprehensive breakdown of file compression, server diagnostics, and activity logs.', 'budi-webp-optimizer' ); ?></p>
 		</div>
@@ -101,7 +101,7 @@ $logs    = BWO_Logger::get_logs();
 					<?php else : ?>
 						<?php foreach ( array_reverse( $logs ) as $log ) : ?>
 							<tr>
-								<td style="white-space: nowrap; color: #64748b; font-size: 12px;"><?php echo esc_html( BWO_Formatting::format_date( $log['time'] ) ); ?></td>
+								<td style="white-space: nowrap; color: #64748b; font-size: 12px;"><?php echo esc_html( BUDI_WebP_Formatting::format_date( $log['time'] ) ); ?></td>
 								<td><span class="bwo-badge bwo-badge-<?php echo esc_attr( $log['level'] ); ?>"><?php echo esc_html( strtoupper( $log['level'] ) ); ?></span></td>
 								<td style="color: #0f172a; font-weight: 500;"><?php echo esc_html( $log['message'] ); ?></td>
 							</tr>

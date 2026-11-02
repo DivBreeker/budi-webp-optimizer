@@ -9,9 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Job_Queue {
+class BUDI_WebP_Job_Queue {
 
-	const OPTION_KEY = 'bwo_queue_state';
+	const OPTION_KEY = 'budi_webp_queue_state';
 
 	/**
 	 * Initialize or reset bulk conversion queue.
@@ -89,10 +89,10 @@ class BWO_Job_Queue {
 
 		foreach ( $chunk as $attachment_id ) {
 			$state['processed']++;
-			$attachment = new BWO_Attachment( $attachment_id );
+			$attachment = new BUDI_WebP_Attachment( $attachment_id );
 			$last_processed_name = $attachment->filename;
 
-			$res = BWO_Converter::convert( $attachment_id );
+			$res = BUDI_WebP_Converter::convert( $attachment_id );
 
 			if ( $res->success ) {
 				$state['successful']++;

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Thumbnail_Handler {
+class BUDI_WebP_Thumbnail_Handler {
 
 	/**
 	 * Convert intermediate thumbnail sizes of an attachment to WebP.
@@ -42,9 +42,9 @@ class BWO_Thumbnail_Handler {
 			}
 
 			$orig_size = filesize( $source_thumb );
-			$dest_webp = BWO_Utils::get_webp_path( $source_thumb );
+			$dest_webp = BUDI_WebP_Utils::get_webp_path( $source_thumb );
 
-			$encoded = BWO_WebP_Encoder::encode( $source_thumb, $dest_webp, $quality );
+			$encoded = BUDI_WebP_WebP_Encoder::encode( $source_thumb, $dest_webp, $quality );
 
 			if ( ! is_wp_error( $encoded ) && file_exists( $dest_webp ) ) {
 				$webp_size = filesize( $dest_webp );

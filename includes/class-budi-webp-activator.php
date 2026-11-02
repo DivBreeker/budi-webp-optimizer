@@ -9,18 +9,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Activator {
+class BUDI_WebP_Activator {
 
 	public static function activate() {
 		// Initialize default settings if not exists
-		if ( false === get_option( 'bwo_settings' ) ) {
-			update_option( 'bwo_settings', BWO_Settings::get_defaults() );
+		if ( false === get_option( 'budi_webp_settings' ) ) {
+			update_option( 'budi_webp_settings', BUDI_WebP_Settings::get_defaults() );
 		}
 
 		// Ensure backup directory structure exists
-		BWO_Utils::get_backup_dir();
+		BUDI_WebP_Utils::get_backup_dir();
 
 		// Prime summary stats
-		BWO_Media_Scanner::get_summary_stats( true );
+		BUDI_WebP_Media_Scanner::get_summary_stats( true );
 	}
 }

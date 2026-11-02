@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_File_Safety {
+class BUDI_WebP_File_Safety {
 
 	/**
 	 * Verify that a given path resides inside the WordPress uploads directory.

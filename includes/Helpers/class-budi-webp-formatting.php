@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Formatting {
+class BUDI_WebP_Formatting {
 
 	/**
 	 * Format bytes into human readable format (KB, MB, GB).

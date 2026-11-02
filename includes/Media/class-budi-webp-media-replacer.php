@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Media_Replacer {
+class BUDI_WebP_Media_Replacer {
 
 	/**
 	 * Replace attachment with WebP version.
@@ -23,14 +23,14 @@ class BWO_Media_Replacer {
 	 */
 	public static function replace( $attachment_id, $webp_path, $keep_backup = false, $delete_original = false ) {
 		if ( ! file_exists( $webp_path ) || filesize( $webp_path ) === 0 ) {
-			return new WP_Error( 'bwo_invalid_webp', __( 'Generated WebP file is invalid or missing.', 'budi-webp-optimizer' ) );
+			return new WP_Error( 'budi_webp_invalid_webp', __( 'Generated WebP file is invalid or missing.', 'budi-webp-optimizer' ) );
 		}
 
 		$original_file = get_attached_file( $attachment_id );
 
 		// Step 1: Backup original files if backup enabled and not already backed up
-		if ( $keep_backup && ! BWO_Backup_Manager::has_backup( $attachment_id ) ) {
-			$backed_up = BWO_Backup_Manager::create_backup( $attachment_id );
+		if ( $keep_backup && ! BUDI_WebP_Backup_Manager::has_backup( $attachment_id ) ) {
+			$backed_up = BUDI_WebP_Backup_Manager::create_backup( $attachment_id );
 			if ( is_wp_error( $backed_up ) ) {
 				return $backed_up;
 			}
@@ -38,7 +38,7 @@ class BWO_Media_Replacer {
 
 		// Step 2: Compute relative path for _wp_attached_file
 		$relative_file = get_post_meta( $attachment_id, '_wp_attached_file', true );
-		$new_relative  = BWO_Utils::get_webp_path( $relative_file );
+		$new_relative  = BUDI_WebP_Utils::get_webp_path( $relative_file );
 
 		// Step 3: Update post meta and post record
 		update_attached_file( $attachment_id, $webp_path );
@@ -56,7 +56,7 @@ class BWO_Media_Replacer {
 			wp_delete_file( $original_file );
 		}
 
-		BWO_Logger::log( "Replaced attachment #{$attachment_id} with WebP: {$new_relative}" );
+		BUDI_WebP_Logger::log( "Replaced attachment #{$attachment_id} with WebP: {$new_relative}" );
 		return true;
 	}
 }

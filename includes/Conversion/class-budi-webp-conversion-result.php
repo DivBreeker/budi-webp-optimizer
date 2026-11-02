@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Conversion_Result {
+class BUDI_WebP_Conversion_Result {
 
 	public $success       = false;
 	public $attachment_id = 0;
@@ -32,9 +32,9 @@ class BWO_Conversion_Result {
 			'saved_bytes'   => $this->saved_bytes,
 			'saved_percent' => $this->saved_percent,
 			'formatted'     => array(
-				'original_size' => BWO_Formatting::format_bytes( $this->original_size ),
-				'webp_size'     => BWO_Formatting::format_bytes( $this->webp_size ),
-				'saved_bytes'   => BWO_Formatting::format_bytes( $this->saved_bytes ),
+				'original_size' => BUDI_WebP_Formatting::format_bytes( $this->original_size ),
+				'webp_size'     => BUDI_WebP_Formatting::format_bytes( $this->webp_size ),
+				'saved_bytes'   => BUDI_WebP_Formatting::format_bytes( $this->saved_bytes ),
 				'saved_percent' => $this->saved_percent . '%',
 			),
 			'thumbnails'    => $this->thumbnails,

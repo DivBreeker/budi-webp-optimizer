@@ -9,9 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Backup_Manager {
+class BUDI_WebP_Backup_Manager {
 
-	const META_BACKUP_DATA = '_bwo_backup_data';
+	const META_BACKUP_DATA = '_budi_webp_backup_data';
 
 	/**
 	 * Create a backup of an attachment and all its intermediate sizes before replacement.
@@ -22,10 +22,10 @@ class BWO_Backup_Manager {
 	public static function create_backup( $attachment_id ) {
 		$file_path = get_attached_file( $attachment_id );
 		if ( ! $file_path || ! file_exists( $file_path ) ) {
-			return new WP_Error( 'bwo_backup_no_file', __( 'Attachment file does not exist for backup.', 'budi-webp-optimizer' ) );
+			return new WP_Error( 'budi_webp_backup_no_file', __( 'Attachment file does not exist for backup.', 'budi-webp-optimizer' ) );
 		}
 
-		$backup_dir = BWO_Utils::get_backup_dir();
+		$backup_dir = BUDI_WebP_Utils::get_backup_dir();
 		$item_dir   = trailingslashit( $backup_dir ) . $attachment_id;
 
 		if ( ! file_exists( $item_dir ) ) {
@@ -37,7 +37,7 @@ class BWO_Backup_Manager {
 		$copied       = @copy( $file_path, $backup_file );
 
 		if ( ! $copied ) {
-			return new WP_Error( 'bwo_backup_copy_failed', __( 'Could not copy original file to backup directory.', 'budi-webp-optimizer' ) );
+			return new WP_Error( 'budi_webp_backup_copy_failed', __( 'Could not copy original file to backup directory.', 'budi-webp-optimizer' ) );
 		}
 
 		// Also backup intermediate thumbnails if any
@@ -73,7 +73,7 @@ class BWO_Backup_Manager {
 		);
 
 		update_post_meta( $attachment_id, self::META_BACKUP_DATA, $backup_data );
-		BWO_Logger::log( "Original backup created for attachment #{$attachment_id} ({$filename})" );
+		BUDI_WebP_Logger::log( "Original backup created for attachment #{$attachment_id} ({$filename})" );
 		return true;
 	}
 
@@ -98,7 +98,11 @@ class BWO_Backup_Manager {
 	 * @return array|null
 	 */
 	public static function get_backup( $attachment_id ) {
-		return get_post_meta( $attachment_id, self::META_BACKUP_DATA, true );
+		$backup = get_post_meta( $attachment_id, self::META_BACKUP_DATA, true );
+		if ( empty( $backup ) ) {
+			$backup = get_post_meta( $attachment_id, '_bwo_backup_data', true );
+		}
+		return $backup;
 	}
 
 	/**
@@ -150,7 +154,8 @@ class BWO_Backup_Manager {
 		}
 
 		delete_post_meta( $attachment_id, self::META_BACKUP_DATA );
-		BWO_Logger::log( "Deleted original backup for attachment #{$attachment_id}" );
+		delete_post_meta( $attachment_id, '_bwo_backup_data' );
+		BUDI_WebP_Logger::log( "Deleted original backup for attachment #{$attachment_id}" );
 		return true;
 	}
 
@@ -162,7 +167,7 @@ class BWO_Backup_Manager {
 	public static function delete_all_backups() {
 		global $wpdb, $wp_filesystem;
 
-		$backup_dir = BWO_Utils::get_backup_dir();
+		$backup_dir = BUDI_WebP_Utils::get_backup_dir();
 		if ( file_exists( $backup_dir ) ) {
 			if ( empty( $wp_filesystem ) ) {
 				require_once ABSPATH . '/wp-admin/includes/file.php';
@@ -195,12 +200,13 @@ class BWO_Backup_Manager {
 
 		$deleted_count = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Intentional bulk delete; no cache invalidation needed.
 			$wpdb->prepare(
-				"DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s",
-				self::META_BACKUP_DATA
+				"DELETE FROM {$wpdb->postmeta} WHERE meta_key IN (%s, %s)",
+				self::META_BACKUP_DATA,
+				'_bwo_backup_data'
 			)
 		);
 
-		BWO_Logger::log( "All original image backups deleted from server storage." );
+		BUDI_WebP_Logger::log( "All original image backups deleted from server storage." );
 		return $deleted_count;
 	}
 }

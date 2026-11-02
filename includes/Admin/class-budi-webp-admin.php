@@ -9,26 +9,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Admin {
+class BUDI_WebP_Admin {
 
 	public static function init() {
 		// Only enqueue on BWO pages
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 
 		// AJAX endpoints
-		add_action( 'wp_ajax_bwo_scan_library', array( __CLASS__, 'ajax_scan_library' ) );
-		add_action( 'wp_ajax_bwo_get_images', array( __CLASS__, 'ajax_get_images' ) );
-		add_action( 'wp_ajax_bwo_convert_single', array( __CLASS__, 'ajax_convert_single' ) );
-		add_action( 'wp_ajax_bwo_restore_single', array( __CLASS__, 'ajax_restore_single' ) );
-		add_action( 'wp_ajax_bwo_delete_backup', array( __CLASS__, 'ajax_delete_backup' ) );
-		add_action( 'wp_ajax_bwo_clear_all_backups', array( __CLASS__, 'ajax_clear_all_backups' ) );
-		add_action( 'wp_ajax_bwo_start_bulk', array( __CLASS__, 'ajax_start_bulk' ) );
-		add_action( 'wp_ajax_bwo_process_batch', array( __CLASS__, 'ajax_process_batch' ) );
-		add_action( 'wp_ajax_bwo_cancel_bulk', array( __CLASS__, 'ajax_cancel_bulk' ) );
-		add_action( 'wp_ajax_bwo_save_settings', array( __CLASS__, 'ajax_save_settings' ) );
-		add_action( 'wp_ajax_bwo_get_preview', array( __CLASS__, 'ajax_get_preview' ) );
-		add_action( 'wp_ajax_bwo_clear_logs', array( __CLASS__, 'ajax_clear_logs' ) );
-		add_action( 'wp_ajax_bwo_get_logs', array( __CLASS__, 'ajax_get_logs' ) );
+		add_action( 'wp_ajax_budi_webp_scan_library', array( __CLASS__, 'ajax_scan_library' ) );
+		add_action( 'wp_ajax_budi_webp_get_images', array( __CLASS__, 'ajax_get_images' ) );
+		add_action( 'wp_ajax_budi_webp_convert_single', array( __CLASS__, 'ajax_convert_single' ) );
+		add_action( 'wp_ajax_budi_webp_restore_single', array( __CLASS__, 'ajax_restore_single' ) );
+		add_action( 'wp_ajax_budi_webp_delete_backup', array( __CLASS__, 'ajax_delete_backup' ) );
+		add_action( 'wp_ajax_budi_webp_clear_all_backups', array( __CLASS__, 'ajax_clear_all_backups' ) );
+		add_action( 'wp_ajax_budi_webp_start_bulk', array( __CLASS__, 'ajax_start_bulk' ) );
+		add_action( 'wp_ajax_budi_webp_process_batch', array( __CLASS__, 'ajax_process_batch' ) );
+		add_action( 'wp_ajax_budi_webp_cancel_bulk', array( __CLASS__, 'ajax_cancel_bulk' ) );
+		add_action( 'wp_ajax_budi_webp_save_settings', array( __CLASS__, 'ajax_save_settings' ) );
+		add_action( 'wp_ajax_budi_webp_get_preview', array( __CLASS__, 'ajax_get_preview' ) );
+		add_action( 'wp_ajax_budi_webp_clear_logs', array( __CLASS__, 'ajax_clear_logs' ) );
+		add_action( 'wp_ajax_budi_webp_get_logs', array( __CLASS__, 'ajax_get_logs' ) );
 
 		// Auto convert on upload if setting enabled
 		add_filter( 'wp_generate_attachment_metadata', array( __CLASS__, 'handle_auto_convert_on_upload' ), 10, 2 );
@@ -58,30 +58,30 @@ class BWO_Admin {
 		}
 
 		wp_enqueue_style(
-			'bwo-admin-css',
-			BWO_PLUGIN_URL . 'assets/css/admin.css',
+			'budi-webp-admin-css',
+			BUDI_WEBP_PLUGIN_URL . 'assets/css/admin.css',
 			array(),
-			BWO_VERSION
+			BUDI_WEBP_VERSION
 		);
 
 		wp_enqueue_script(
-			'bwo-admin-js',
-			BWO_PLUGIN_URL . 'assets/js/admin.js',
+			'budi-webp-admin-js',
+			BUDI_WEBP_PLUGIN_URL . 'assets/js/admin.js',
 			array( 'jquery' ),
-			BWO_VERSION,
+			BUDI_WEBP_VERSION,
 			true
 		);
 
-		$summary  = BWO_Media_Scanner::get_summary_stats();
-		$settings = BWO_Settings::get_settings();
-		$server   = BWO_Server_Check::get_report();
+		$summary  = BUDI_WebP_Media_Scanner::get_summary_stats();
+		$settings = BUDI_WebP_Settings::get_settings();
+		$server   = BUDI_WebP_Server_Check::get_report();
 
 		wp_localize_script(
-			'bwo-admin-js',
-			'bwoData',
+			'budi-webp-admin-js',
+			'budiWebpData',
 			array(
 				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
-				'nonce'    => BWO_Nonce::create(),
+				'nonce'    => BUDI_WebP_Nonce::create(),
 				'stats'    => $summary,
 				'settings' => $settings,
 				'server'   => $server,
@@ -107,11 +107,11 @@ class BWO_Admin {
 	 * AJAX: Scan library and refresh counts.
 	 */
 	public static function ajax_scan_library() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		$stats = BWO_Media_Scanner::get_summary_stats( true );
-		BWO_Logger::log(
+		$stats = BUDI_WebP_Media_Scanner::get_summary_stats( true );
+		BUDI_WebP_Logger::log(
 			sprintf(
 				'Media Library scanned: %d total, %d converted, %d pending, %s saved',
 				$stats['total_images'],
@@ -128,17 +128,17 @@ class BWO_Admin {
 	 * AJAX: Query paginated image list.
 	 */
 	public static function ajax_get_images() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BUDI_WebP_Nonce::verify_or_die() above.
 		$paged    = isset( $_POST['paged'] ) ? absint( $_POST['paged'] ) : 1;
 		$per_page = isset( $_POST['per_page'] ) ? absint( $_POST['per_page'] ) : 10;
 		$search   = isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '';
 		$status   = isset( $_POST['status'] ) ? sanitize_key( $_POST['status'] ) : 'all';
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
-		$data = BWO_Media_Scanner::query_images(
+		$data = BUDI_WebP_Media_Scanner::query_images(
 			array(
 				'paged'    => $paged,
 				'per_page' => $per_page,
@@ -154,24 +154,24 @@ class BWO_Admin {
 	 * AJAX: Convert single image.
 	 */
 	public static function ajax_convert_single() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BUDI_WebP_Nonce::verify_or_die() above.
 		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		if ( ! $attachment_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid attachment ID.', 'budi-webp-optimizer' ) ) );
 		}
 
-		$result = BWO_Converter::convert( $attachment_id );
+		$result = BUDI_WebP_Converter::convert( $attachment_id );
 		if ( $result->success ) {
-			$attachment = new BWO_Attachment( $attachment_id );
+			$attachment = new BUDI_WebP_Attachment( $attachment_id );
 			wp_send_json_success(
 				array(
 					'message'    => __( 'Image successfully converted to WebP.', 'budi-webp-optimizer' ),
 					'attachment' => $attachment->to_table_array(),
-					'stats'      => BWO_Media_Scanner::get_summary_stats( true ),
+					'stats'      => BUDI_WebP_Media_Scanner::get_summary_stats( true ),
 				)
 			);
 		} else {
@@ -183,24 +183,24 @@ class BWO_Admin {
 	 * AJAX: Restore single image from backup.
 	 */
 	public static function ajax_restore_single() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BUDI_WebP_Nonce::verify_or_die() above.
 		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		if ( ! $attachment_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid attachment ID.', 'budi-webp-optimizer' ) ) );
 		}
 
-		$result = BWO_Restore_Manager::restore( $attachment_id );
+		$result = BUDI_WebP_Restore_Manager::restore( $attachment_id );
 		if ( true === $result ) {
-			$attachment = new BWO_Attachment( $attachment_id );
+			$attachment = new BUDI_WebP_Attachment( $attachment_id );
 			wp_send_json_success(
 				array(
 					'message'    => __( 'Original image restored successfully.', 'budi-webp-optimizer' ),
 					'attachment' => $attachment->to_table_array(),
-					'stats'      => BWO_Media_Scanner::get_summary_stats( true ),
+					'stats'      => BUDI_WebP_Media_Scanner::get_summary_stats( true ),
 				)
 			);
 		} else {
@@ -213,22 +213,22 @@ class BWO_Admin {
 	 * AJAX: Delete backup of a single attachment.
 	 */
 	public static function ajax_delete_backup() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BUDI_WebP_Nonce::verify_or_die() above.
 		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		if ( ! $attachment_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid attachment ID.', 'budi-webp-optimizer' ) ) );
 		}
 
-		$deleted = BWO_Backup_Manager::delete_backup( $attachment_id );
+		$deleted = BUDI_WebP_Backup_Manager::delete_backup( $attachment_id );
 		if ( $deleted ) {
 			wp_send_json_success(
 				array(
 					'message' => __( 'Backup deleted successfully.', 'budi-webp-optimizer' ),
-					'stats'   => BWO_Media_Scanner::get_summary_stats( true ),
+					'stats'   => BUDI_WebP_Media_Scanner::get_summary_stats( true ),
 				)
 			);
 		} else {
@@ -240,16 +240,16 @@ class BWO_Admin {
 	 * AJAX: Clear all backups from server.
 	 */
 	public static function ajax_clear_all_backups() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		$count = BWO_Backup_Manager::delete_all_backups();
+		$count = BUDI_WebP_Backup_Manager::delete_all_backups();
 		/* translators: %d: Number of backup records cleared */
 		$message = sprintf( __( 'All original backups removed (%d records cleared).', 'budi-webp-optimizer' ), $count );
 		wp_send_json_success(
 			array(
 				'message' => $message,
-				'stats'   => BWO_Media_Scanner::get_summary_stats( true ),
+				'stats'   => BUDI_WebP_Media_Scanner::get_summary_stats( true ),
 			)
 		);
 	}
@@ -258,17 +258,17 @@ class BWO_Admin {
 	 * AJAX: Start bulk conversion.
 	 */
 	public static function ajax_start_bulk() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BUDI_WebP_Nonce::verify_or_die() above.
 		$mode = isset( $_POST['mode'] ) ? sanitize_key( $_POST['mode'] ) : 'all'; // 'all', 'selected', 'pending_only', 'failed_only'
 		$ids  = array();
 
 		if ( 'selected' === $mode && ! empty( $_POST['ids'] ) && is_array( $_POST['ids'] ) ) {
 			$ids = array_map( 'absint', $_POST['ids'] );
 		} else {
-			$ids = BWO_Media_Scanner::get_eligible_ids_for_bulk( $mode );
+			$ids = BUDI_WebP_Media_Scanner::get_eligible_ids_for_bulk( $mode );
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
@@ -276,8 +276,8 @@ class BWO_Admin {
 			wp_send_json_error( array( 'message' => __( 'No eligible images found for conversion.', 'budi-webp-optimizer' ) ) );
 		}
 
-		$queue_state = BWO_Job_Queue::initialize_queue( $ids );
-		BWO_Logger::log( sprintf( 'Started bulk WebP conversion queue with %d images (Scope: %s)', count( $ids ), strtoupper( $mode ) ) );
+		$queue_state = BUDI_WebP_Job_Queue::initialize_queue( $ids );
+		BUDI_WebP_Logger::log( sprintf( 'Started bulk WebP conversion queue with %d images (Scope: %s)', count( $ids ), strtoupper( $mode ) ) );
 
 		/* translators: %d: Number of images queued for conversion */
 		$message = sprintf( __( 'Queued %d images for conversion.', 'budi-webp-optimizer' ), count( $ids ) );
@@ -293,16 +293,16 @@ class BWO_Admin {
 	 * AJAX: Process a batch from bulk conversion queue.
 	 */
 	public static function ajax_process_batch() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		$settings   = BWO_Settings::get_settings();
+		$settings   = BUDI_WebP_Settings::get_settings();
 		$batch_size = isset( $settings['batch_size'] ) ? $settings['batch_size'] : 5;
-		$progress   = BWO_Job_Queue::process_batch( $batch_size );
+		$progress   = BUDI_WebP_Job_Queue::process_batch( $batch_size );
 
 		if ( ! empty( $progress['completed'] ) ) {
-			$progress['stats'] = BWO_Media_Scanner::get_summary_stats( true );
-			BWO_Logger::log(
+			$progress['stats'] = BUDI_WebP_Media_Scanner::get_summary_stats( true );
+			BUDI_WebP_Logger::log(
 				sprintf(
 					'Bulk WebP conversion completed: %d total, %d successful, %d failed',
 					$progress['total'],
@@ -320,11 +320,11 @@ class BWO_Admin {
 	 * AJAX: Cancel bulk queue.
 	 */
 	public static function ajax_cancel_bulk() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		BWO_Job_Queue::cancel_queue();
-		BWO_Logger::log( 'Bulk conversion queue was cancelled by user.', 'warning' );
+		BUDI_WebP_Job_Queue::cancel_queue();
+		BUDI_WebP_Logger::log( 'Bulk conversion queue was cancelled by user.', 'warning' );
 		wp_send_json_success( array( 'message' => __( 'Bulk conversion cancelled.', 'budi-webp-optimizer' ) ) );
 	}
 
@@ -332,13 +332,13 @@ class BWO_Admin {
 	 * AJAX: Save settings.
 	 */
 	public static function ajax_save_settings() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		// phpcs:disable WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput -- Nonce verified above; sanitization handled inside BWO_Settings::update_settings().
+		// phpcs:disable WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput -- Nonce verified above; sanitization handled inside BUDI_WebP_Settings::update_settings().
 		$raw_settings = isset( $_POST['settings'] ) && is_array( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : array();
 		// phpcs:enable WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput
-		$updated = BWO_Settings::update_settings( $raw_settings );
+		$updated = BUDI_WebP_Settings::update_settings( $raw_settings );
 
 		wp_send_json_success(
 			array(
@@ -352,25 +352,25 @@ class BWO_Admin {
 	 * AJAX: Get preview data for comparison modal.
 	 */
 	public static function ajax_get_preview() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BWO_Nonce::verify_or_die() above.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified via BUDI_WebP_Nonce::verify_or_die() above.
 		$attachment_id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		if ( ! $attachment_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid attachment ID.', 'budi-webp-optimizer' ) ) );
 		}
 
-		$attachment = new BWO_Attachment( $attachment_id );
-		$meta       = get_post_meta( $attachment_id, '_bwo_webp_data', true );
-		$backup     = BWO_Backup_Manager::get_backup( $attachment_id );
+		$attachment = new BUDI_WebP_Attachment( $attachment_id );
+		$meta       = get_post_meta( $attachment_id, '_budi_webp_data', true );
+		$backup     = BUDI_WebP_Backup_Manager::get_backup( $attachment_id );
 
 		$orig_url = wp_get_attachment_url( $attachment_id );
 		$webp_url = '';
 
 		if ( ! empty( $meta['webp_file'] ) && file_exists( $meta['webp_file'] ) ) {
-			$webp_url = BWO_Utils::get_webp_url( $orig_url );
+			$webp_url = BUDI_WebP_Utils::get_webp_url( $orig_url );
 		}
 
 		// If replaced mode, the current attachment URL IS the WebP, and original was backed up
@@ -386,8 +386,8 @@ class BWO_Admin {
 				'attachment'    => $attachment->to_table_array(),
 				'original_url'  => $orig_url,
 				'webp_url'      => $webp_url ? $webp_url : $orig_url,
-				'original_size' => BWO_Formatting::format_bytes( $attachment->original_size ),
-				'webp_size'     => $attachment->webp_size > 0 ? BWO_Formatting::format_bytes( $attachment->webp_size ) : '—',
+				'original_size' => BUDI_WebP_Formatting::format_bytes( $attachment->original_size ),
+				'webp_size'     => $attachment->webp_size > 0 ? BUDI_WebP_Formatting::format_bytes( $attachment->webp_size ) : '—',
 				'savings'       => $attachment->savings_percent > 0 ? round( $attachment->savings_percent ) . '%' : '—',
 			)
 		);
@@ -397,11 +397,11 @@ class BWO_Admin {
 	 * AJAX: Clear activity logs.
 	 */
 	public static function ajax_clear_logs() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		BWO_Logger::clear_logs();
-		BWO_Logger::log( 'Activity logs cleared by user.' );
+		BUDI_WebP_Logger::clear_logs();
+		BUDI_WebP_Logger::log( 'Activity logs cleared by user.' );
 
 		wp_send_json_success( array( 'message' => __( 'Logs cleared.', 'budi-webp-optimizer' ) ) );
 	}
@@ -410,14 +410,14 @@ class BWO_Admin {
 	 * AJAX: Fetch recent activity logs.
 	 */
 	public static function ajax_get_logs() {
-		BWO_Permissions::verify_or_die();
-		BWO_Nonce::verify_or_die();
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
 
-		$logs = BWO_Logger::get_logs();
+		$logs = BUDI_WebP_Logger::get_logs();
 		$formatted = array();
 		foreach ( array_reverse( $logs ) as $log ) {
 			$formatted[] = array(
-				'time'    => BWO_Formatting::format_date( $log['time'] ),
+				'time'    => BUDI_WebP_Formatting::format_date( $log['time'] ),
 				'level'   => strtoupper( $log['level'] ),
 				'message' => $log['message'],
 			);
@@ -430,14 +430,14 @@ class BWO_Admin {
 	 * Hook: Auto convert when new image is uploaded.
 	 */
 	public static function handle_auto_convert_on_upload( $metadata, $attachment_id ) {
-		$settings = BWO_Settings::get_settings();
+		$settings = BUDI_WebP_Settings::get_settings();
 		if ( empty( $settings['auto_convert'] ) ) {
 			return $metadata;
 		}
 
 		$mime = get_post_mime_type( $attachment_id );
 		if ( in_array( $mime, array( 'image/jpeg', 'image/png' ), true ) ) {
-			BWO_Converter::convert( $attachment_id );
+			BUDI_WebP_Converter::convert( $attachment_id );
 		}
 
 		return $metadata;
@@ -447,7 +447,7 @@ class BWO_Admin {
 	 * Add WebP column to WP Media Library.
 	 */
 	public static function add_media_columns( $columns ) {
-		$columns['bwo_webp'] = __( 'WebP Optimizer', 'budi-webp-optimizer' );
+		$columns['budi_webp'] = __( 'WebP Optimizer', 'budi-webp-optimizer' );
 		return $columns;
 	}
 
@@ -455,15 +455,15 @@ class BWO_Admin {
 	 * Render WebP column content.
 	 */
 	public static function render_media_columns( $column_name, $post_id ) {
-		if ( 'bwo_webp' !== $column_name ) {
+		if ( 'budi_webp' !== $column_name ) {
 			return;
 		}
 
 		$mime_type = get_post_mime_type( $post_id );
 		$is_webp   = ( 'image/webp' === $mime_type );
-		$is_conv   = get_post_meta( $post_id, '_bwo_converted', true );
-		$is_fail   = get_post_meta( $post_id, '_bwo_failed', true );
-		$data      = get_post_meta( $post_id, '_bwo_webp_data', true );
+		$is_conv   = get_post_meta( $post_id, '_budi_webp_converted', true );
+		$is_fail   = get_post_meta( $post_id, '_budi_webp_failed', true );
+		$data      = get_post_meta( $post_id, '_budi_webp_data', true );
 
 		if ( $is_conv || $is_webp ) {
 			$pct = isset( $data['saved_percent'] ) ? round( $data['saved_percent'] ) : 0;

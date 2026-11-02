@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Admin_Menu {
+class BUDI_WebP_Admin_Menu {
 
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menus' ) );
@@ -46,7 +46,7 @@ class BWO_Admin_Menu {
 			__( 'Media Library - BUDI WebP Optimizer', 'budi-webp-optimizer' ),
 			__( 'Media Library', 'budi-webp-optimizer' ),
 			'manage_options',
-			'bwo-media-library',
+			'budi-webp-media-library',
 			array( __CLASS__, 'render_media_library_page' )
 		);
 
@@ -55,7 +55,7 @@ class BWO_Admin_Menu {
 			__( 'Bulk Convert - BUDI WebP Optimizer', 'budi-webp-optimizer' ),
 			__( 'Bulk Convert', 'budi-webp-optimizer' ),
 			'manage_options',
-			'bwo-bulk-convert',
+			'budi-webp-bulk-convert',
 			array( __CLASS__, 'render_bulk_convert_page' )
 		);
 
@@ -64,7 +64,7 @@ class BWO_Admin_Menu {
 			__( 'Settings - BUDI WebP Optimizer', 'budi-webp-optimizer' ),
 			__( 'Settings', 'budi-webp-optimizer' ),
 			'manage_options',
-			'bwo-settings',
+			'budi-webp-settings',
 			array( __CLASS__, 'render_settings_page' )
 		);
 
@@ -73,7 +73,7 @@ class BWO_Admin_Menu {
 			__( 'Backups - BUDI WebP Optimizer', 'budi-webp-optimizer' ),
 			__( 'Backups', 'budi-webp-optimizer' ),
 			'manage_options',
-			'bwo-backups',
+			'budi-webp-backups',
 			array( __CLASS__, 'render_backups_page' )
 		);
 
@@ -82,32 +82,32 @@ class BWO_Admin_Menu {
 			__( 'Reports - BUDI WebP Optimizer', 'budi-webp-optimizer' ),
 			__( 'Reports', 'budi-webp-optimizer' ),
 			'manage_options',
-			'bwo-reports',
+			'budi-webp-reports',
 			array( __CLASS__, 'render_reports_page' )
 		);
 	}
 
 	public static function render_dashboard_page() {
-		require_once BWO_PLUGIN_DIR . 'templates/dashboard.php';
+		require_once BUDI_WEBP_PLUGIN_DIR . 'templates/dashboard.php';
 	}
 
 	public static function render_media_library_page() {
-		require_once BWO_PLUGIN_DIR . 'templates/media-optimizer.php';
+		require_once BUDI_WEBP_PLUGIN_DIR . 'templates/media-optimizer.php';
 	}
 
 	public static function render_bulk_convert_page() {
-		require_once BWO_PLUGIN_DIR . 'templates/bulk-convert.php';
+		require_once BUDI_WEBP_PLUGIN_DIR . 'templates/bulk-convert.php';
 	}
 
 	public static function render_settings_page() {
-		require_once BWO_PLUGIN_DIR . 'templates/settings.php';
+		require_once BUDI_WEBP_PLUGIN_DIR . 'templates/settings.php';
 	}
 
 	public static function render_backups_page() {
-		require_once BWO_PLUGIN_DIR . 'templates/backups.php';
+		require_once BUDI_WEBP_PLUGIN_DIR . 'templates/backups.php';
 	}
 
 	public static function render_reports_page() {
-		require_once BWO_PLUGIN_DIR . 'templates/reports.php';
+		require_once BUDI_WEBP_PLUGIN_DIR . 'templates/reports.php';
 	}
 }

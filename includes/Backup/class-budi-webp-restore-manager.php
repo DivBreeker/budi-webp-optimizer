@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Restore_Manager {
+class BUDI_WebP_Restore_Manager {
 
 	/**
 	 * Restore an attachment to its original file and metadata.
@@ -18,14 +18,14 @@ class BWO_Restore_Manager {
 	 * @return bool|WP_Error
 	 */
 	public static function restore( $attachment_id ) {
-		$backup = BWO_Backup_Manager::get_backup( $attachment_id );
+		$backup = BUDI_WebP_Backup_Manager::get_backup( $attachment_id );
 		if ( empty( $backup ) ) {
-			return new WP_Error( 'bwo_no_backup', __( 'No backup found for this attachment.', 'budi-webp-optimizer' ) );
+			return new WP_Error( 'budi_webp_no_backup', __( 'No backup found for this attachment.', 'budi-webp-optimizer' ) );
 		}
 
 		$backup_file = $backup['backup_path'];
 		if ( ! file_exists( $backup_file ) ) {
-			return new WP_Error( 'bwo_backup_file_missing', __( 'Backup file on server is missing.', 'budi-webp-optimizer' ) );
+			return new WP_Error( 'budi_webp_backup_file_missing', __( 'Backup file on server is missing.', 'budi-webp-optimizer' ) );
 		}
 
 		$original_file = $backup['original_file'];
@@ -39,7 +39,7 @@ class BWO_Restore_Manager {
 		}
 
 		// Also check adjacent webp file if it was "Keep original" mode
-		$adjacent_webp = BWO_Utils::get_webp_path( $original_file );
+		$adjacent_webp = BUDI_WebP_Utils::get_webp_path( $original_file );
 		if ( file_exists( $adjacent_webp ) ) {
 			wp_delete_file( $adjacent_webp );
 		}
@@ -47,7 +47,7 @@ class BWO_Restore_Manager {
 		// Restore original main file from backup
 		$copied = @copy( $backup_file, $original_file );
 		if ( ! $copied ) {
-			return new WP_Error( 'bwo_restore_copy_failed', __( 'Failed to copy original file back from backup.', 'budi-webp-optimizer' ) );
+			return new WP_Error( 'budi_webp_restore_copy_failed', __( 'Failed to copy original file back from backup.', 'budi-webp-optimizer' ) );
 		}
 
 		// Restore intermediate thumbnails from backup if saved
@@ -60,7 +60,7 @@ class BWO_Restore_Manager {
 					@copy( $thumb_backup, $thumb_dest );
 				}
 				// Remove any generated webp variant
-				$webp_thumb = BWO_Utils::get_webp_path( $thumb_dest );
+				$webp_thumb = BUDI_WebP_Utils::get_webp_path( $thumb_dest );
 				if ( file_exists( $webp_thumb ) ) {
 					wp_delete_file( $webp_thumb );
 				}
@@ -84,17 +84,17 @@ class BWO_Restore_Manager {
 		}
 
 		// Clean plugin post meta
-		delete_post_meta( $attachment_id, '_bwo_webp_data' );
-		delete_post_meta( $attachment_id, '_bwo_converted' );
-		delete_post_meta( $attachment_id, '_bwo_failed' );
+		delete_post_meta( $attachment_id, '_budi_webp_data' );
+		delete_post_meta( $attachment_id, '_budi_webp_converted' );
+		delete_post_meta( $attachment_id, '_budi_webp_failed' );
 
 		// Clean up backup directory files
-		BWO_Backup_Manager::delete_backup( $attachment_id );
+		BUDI_WebP_Backup_Manager::delete_backup( $attachment_id );
 
 		// Invalidate cache
-		delete_transient( 'bwo_stats_summary' );
+		delete_transient( 'budi_webp_stats_summary' );
 
-		BWO_Logger::log( "Successfully restored original attachment #{$attachment_id}" );
+		BUDI_WebP_Logger::log( "Successfully restored original attachment #{$attachment_id}" );
 		return true;
 	}
 }

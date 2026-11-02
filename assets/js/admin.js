@@ -1,7 +1,7 @@
 /**
  * BUDI WebP Optimizer - Admin JavaScript
  * Pure vanilla / jQuery lightweight controller.
- * Version: 1.0.3
+ * Version: 1.0.4
  */
 
 (function($) {
@@ -94,9 +94,9 @@
 				$icon.addClass('bwo-spinning');
 				$btn.prop('disabled', true);
 
-				$.post(bwoData.ajaxUrl, {
-					action: 'bwo_scan_library',
-					bwo_nonce: bwoData.nonce
+				$.post(budiWebpData.ajaxUrl, {
+					action: 'budi_webp_scan_library',
+					budi_webp_nonce: budiWebpData.nonce
 				}, function(response) {
 					$icon.removeClass('bwo-spinning');
 					$btn.prop('disabled', false);
@@ -134,7 +134,7 @@
 
 			// Quick Action: Convert All Images
 			$('#bwo-btn-convert-all').on('click', function() {
-				if (confirm(bwoData.strings.confirmConvertAll)) {
+				if (confirm(budiWebpData.strings.confirmConvertAll)) {
 					self.startBulkConversion('all');
 				}
 			});
@@ -149,7 +149,7 @@
 			// Bulk Action: Restore Selected
 			$('#bwo-btn-restore-selected').on('click', function() {
 				if (self.state.selectedIds.length === 0) return;
-				if (!confirm(bwoData.strings.confirmRestore)) return;
+				if (!confirm(budiWebpData.strings.confirmRestore)) return;
 
 				var idsToRestore = self.state.selectedIds.slice();
 				self.restoreMultiple(idsToRestore);
@@ -160,12 +160,12 @@
 				e.preventDefault();
 				var $btn = $(this);
 				var id = $btn.data('id');
-				$btn.prop('disabled', true).text(bwoData.strings.converting);
+				$btn.prop('disabled', true).text(budiWebpData.strings.converting);
 
-				$.post(bwoData.ajaxUrl, {
-					action: 'bwo_convert_single',
+				$.post(budiWebpData.ajaxUrl, {
+					action: 'budi_webp_convert_single',
 					attachment_id: id,
-					bwo_nonce: bwoData.nonce
+					budi_webp_nonce: budiWebpData.nonce
 				}, function(res) {
 					if (res.success) {
 						if (res.data.stats) {
@@ -173,7 +173,7 @@
 						}
 						self.loadImages();
 					} else {
-						alert(res.data && res.data.message ? res.data.message : bwoData.strings.failed);
+						alert(res.data && res.data.message ? res.data.message : budiWebpData.strings.failed);
 						$btn.prop('disabled', false).text('Convert');
 					}
 				});
@@ -185,14 +185,14 @@
 				var $btn = $(this);
 				var id = $btn.data('id');
 
-				if (!confirm(bwoData.strings.confirmRestore)) return;
+				if (!confirm(budiWebpData.strings.confirmRestore)) return;
 
-				$btn.prop('disabled', true).text(bwoData.strings.restoring);
+				$btn.prop('disabled', true).text(budiWebpData.strings.restoring);
 
-				$.post(bwoData.ajaxUrl, {
-					action: 'bwo_restore_single',
+				$.post(budiWebpData.ajaxUrl, {
+					action: 'budi_webp_restore_single',
 					attachment_id: id,
-					bwo_nonce: bwoData.nonce
+					budi_webp_nonce: budiWebpData.nonce
 				}, function(res) {
 					if (res.success) {
 						if (res.data.stats) {
@@ -223,14 +223,14 @@
 				var $btn = $(this);
 				var id = $btn.data('id');
 
-				if (!confirm(bwoData.strings.confirmDeleteBackup)) return;
+				if (!confirm(budiWebpData.strings.confirmDeleteBackup)) return;
 
-				$btn.prop('disabled', true).text(bwoData.strings.deleting);
+				$btn.prop('disabled', true).text(budiWebpData.strings.deleting);
 
-				$.post(bwoData.ajaxUrl, {
-					action: 'bwo_delete_backup',
+				$.post(budiWebpData.ajaxUrl, {
+					action: 'budi_webp_delete_backup',
 					attachment_id: id,
-					bwo_nonce: bwoData.nonce
+					budi_webp_nonce: budiWebpData.nonce
 				}, function(res) {
 					if (res.success) {
 						var $row = $('#bwo-backup-row-' + id);
@@ -253,14 +253,14 @@
 			// Clear All Backups Action
 			$('#bwo-btn-clear-all-backups').on('click', function(e) {
 				e.preventDefault();
-				if (!confirm(bwoData.strings.confirmClearBackups)) return;
+				if (!confirm(budiWebpData.strings.confirmClearBackups)) return;
 
 				var $btn = $(this);
 				$btn.prop('disabled', true).text('Clearing...');
 
-				$.post(bwoData.ajaxUrl, {
-					action: 'bwo_clear_all_backups',
-					bwo_nonce: bwoData.nonce
+				$.post(budiWebpData.ajaxUrl, {
+					action: 'budi_webp_clear_all_backups',
+					budi_webp_nonce: budiWebpData.nonce
 				}, function(res) {
 					if (res.success) {
 						$('#bwo-backups-tbody').html('<tr><td colspan="5" class="bwo-td-empty">All backups have been removed.</td></tr>');
@@ -276,11 +276,11 @@
 			// Clear Activity Logs
 			$(document).on('click', '#bwo-btn-clear-logs', function(e) {
 				e.preventDefault();
-				if (!confirm(bwoData.strings.confirmClearLogs)) return;
+				if (!confirm(budiWebpData.strings.confirmClearLogs)) return;
 
-				$.post(bwoData.ajaxUrl, {
-					action: 'bwo_clear_logs',
-					bwo_nonce: bwoData.nonce
+				$.post(budiWebpData.ajaxUrl, {
+					action: 'budi_webp_clear_logs',
+					budi_webp_nonce: budiWebpData.nonce
 				}, function(res) {
 					if (res.success) {
 						var emptyRow = '<tr><td colspan="3" class="bwo-td-empty">Activity logs cleared.</td></tr>';
@@ -296,9 +296,9 @@
 				var $btn = $(this);
 				$btn.prop('disabled', true);
 
-				$.post(bwoData.ajaxUrl, {
-					action: 'bwo_get_logs',
-					bwo_nonce: bwoData.nonce
+				$.post(budiWebpData.ajaxUrl, {
+					action: 'budi_webp_get_logs',
+					budi_webp_nonce: budiWebpData.nonce
 				}, function(res) {
 					$btn.prop('disabled', false);
 					if (res.success && res.data && res.data.logs) {
@@ -349,9 +349,9 @@
 
 			$('#bwo-btn-bulk-cancel, #bwo-btn-page-cancel, #bwo-bulk-close-btn').on('click', function() {
 				self.state.bulkRunning = false;
-				$.post(bwoData.ajaxUrl, {
-					action: 'bwo_cancel_bulk',
-					bwo_nonce: bwoData.nonce
+				$.post(budiWebpData.ajaxUrl, {
+					action: 'budi_webp_cancel_bulk',
+					budi_webp_nonce: budiWebpData.nonce
 				});
 				$('#bwo-bulk-modal').fadeOut(150);
 				$('#bwo-btn-page-pause, #bwo-btn-page-cancel').hide();
@@ -375,13 +375,13 @@
 				var customBackup  = $('#bwo-bulk-keep-backup').is(':checked') ? 1 : 0;
 
 				// Save settings first if user changed quality or backup toggle
-				$.post(bwoData.ajaxUrl, {
-					action: 'bwo_save_settings',
+				$.post(budiWebpData.ajaxUrl, {
+					action: 'budi_webp_save_settings',
 					settings: {
 						quality: customQuality,
 						keep_backup: customBackup
 					},
-					bwo_nonce: bwoData.nonce
+					budi_webp_nonce: budiWebpData.nonce
 				}, function() {
 					self.startBulkConversion(scope, null, true);
 				});
@@ -454,14 +454,14 @@
 
 				$status.text('Saving...').fadeIn();
 
-				$.post(bwoData.ajaxUrl, {
-					action: 'bwo_save_settings',
+				$.post(budiWebpData.ajaxUrl, {
+					action: 'budi_webp_save_settings',
 					settings: settingsObj,
-					bwo_nonce: bwoData.nonce
+					budi_webp_nonce: budiWebpData.nonce
 				}, function(res) {
 					if (res.success && res.data && res.data.settings) {
-						bwoData.settings = res.data.settings;
-						$status.text(bwoData.strings.settingsSaved);
+						budiWebpData.settings = res.data.settings;
+						$status.text(budiWebpData.strings.settingsSaved);
 						setTimeout(function() {
 							$status.fadeOut(300);
 						}, 3500);
@@ -490,13 +490,13 @@
 			var $tbody = $('#bwo-table-body');
 			$tbody.html('<tr><td colspan="8" class="bwo-td-loading"><div class="bwo-spinner"></div><span>Loading images...</span></td></tr>');
 
-			$.post(bwoData.ajaxUrl, {
-				action: 'bwo_get_images',
+			$.post(budiWebpData.ajaxUrl, {
+				action: 'budi_webp_get_images',
 				paged: self.state.paged,
 				per_page: self.state.perPage,
 				search: self.state.search,
 				status: self.state.status,
-				bwo_nonce: bwoData.nonce
+				budi_webp_nonce: budiWebpData.nonce
 			}, function(res) {
 				if (res.success && res.data) {
 					self.renderTable(res.data);
@@ -629,10 +629,10 @@
 			$('#bwo-pv-orig-img').attr('src', '');
 			$('#bwo-pv-webp-img').attr('src', '');
 
-			$.post(bwoData.ajaxUrl, {
-				action: 'bwo_get_preview',
+			$.post(budiWebpData.ajaxUrl, {
+				action: 'budi_webp_get_preview',
 				attachment_id: id,
-				bwo_nonce: bwoData.nonce
+				budi_webp_nonce: budiWebpData.nonce
 			}, function(res) {
 				if (res.success && res.data) {
 					var d = res.data;
@@ -650,9 +650,9 @@
 			self.state.bulkScope = mode;
 
 			var postData = {
-				action: 'bwo_start_bulk',
+				action: 'budi_webp_start_bulk',
 				mode: mode,
-				bwo_nonce: bwoData.nonce
+				budi_webp_nonce: budiWebpData.nonce
 			};
 			if (ids) {
 				postData.ids = ids;
@@ -674,7 +674,7 @@
 				$('#bwo-btn-trigger-bulk').prop('disabled', true);
 			}
 
-			$.post(bwoData.ajaxUrl, postData, function(res) {
+			$.post(budiWebpData.ajaxUrl, postData, function(res) {
 				if (res.success && res.data.queue) {
 					self.state.bulkRunning = true;
 					self.state.bulkPaused = false;
@@ -692,9 +692,9 @@
 			var self = this;
 			if (!self.state.bulkRunning || self.state.bulkPaused) return;
 
-			$.post(bwoData.ajaxUrl, {
-				action: 'bwo_process_batch',
-				bwo_nonce: bwoData.nonce
+			$.post(budiWebpData.ajaxUrl, {
+				action: 'budi_webp_process_batch',
+				budi_webp_nonce: budiWebpData.nonce
 			}, function(res) {
 				if (!res.success) {
 					alert('Batch processing error.');
@@ -760,10 +760,10 @@
 			}
 
 			var id = ids.shift();
-			$.post(bwoData.ajaxUrl, {
-				action: 'bwo_restore_single',
+			$.post(budiWebpData.ajaxUrl, {
+				action: 'budi_webp_restore_single',
 				attachment_id: id,
-				bwo_nonce: bwoData.nonce
+				budi_webp_nonce: budiWebpData.nonce
 			}, function(res) {
 				if (res.success && res.data.stats) {
 					self.applyStats(res.data.stats);

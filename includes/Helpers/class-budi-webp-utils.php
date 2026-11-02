@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Utils {
+class BUDI_WebP_Utils {
 
 	/**
 	 * Get WebP filepath for an image path.

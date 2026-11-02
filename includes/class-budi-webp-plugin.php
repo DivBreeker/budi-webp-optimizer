@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Plugin {
+class BUDI_WebP_Plugin {
 
 	protected static $instance = null;
 
@@ -35,8 +35,8 @@ class BWO_Plugin {
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 
 		if ( is_admin() ) {
-			BWO_Admin_Menu::init();
-			BWO_Admin::init();
+			BUDI_WebP_Admin_Menu::init();
+			BUDI_WebP_Admin::init();
 		}
 	}
 
@@ -44,6 +44,6 @@ class BWO_Plugin {
 		// WordPress.org automatically loads translations since WP 4.6.
 		// load_plugin_textdomain() is intentionally omitted for WP.org hosted plugins.
 		// If you are running this plugin outside WordPress.org, enable the line below:
-		// load_plugin_textdomain( 'budi-webp-optimizer', false, dirname( BWO_PLUGIN_BASENAME ) . '/languages' );
+		// load_plugin_textdomain( 'budi-webp-optimizer', false, dirname( BUDI_WEBP_PLUGIN_BASENAME ) . '/languages' );
 	}
 }

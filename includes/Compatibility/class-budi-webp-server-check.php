@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Server_Check {
+class BUDI_WebP_Server_Check {
 
 	/**
 	 * Check if the server supports WebP encoding.

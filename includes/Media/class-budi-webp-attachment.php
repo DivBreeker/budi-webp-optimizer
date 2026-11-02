@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Attachment {
+class BUDI_WebP_Attachment {
 
 	public $id;
 	public $post;
@@ -46,14 +46,23 @@ class BWO_Attachment {
 			$this->height = $meta['height'];
 		}
 
-		$this->has_backup = BWO_Backup_Manager::has_backup( $this->id );
+		$this->has_backup = BUDI_WebP_Backup_Manager::has_backup( $this->id );
 		$this->load_status();
 	}
 
 	protected function load_status() {
-		$is_failed    = get_post_meta( $this->id, '_bwo_failed', true );
-		$webp_data    = get_post_meta( $this->id, '_bwo_webp_data', true );
-		$is_converted = get_post_meta( $this->id, '_bwo_converted', true );
+		$is_failed    = get_post_meta( $this->id, '_budi_webp_failed', true );
+		if ( '' === $is_failed ) {
+			$is_failed = get_post_meta( $this->id, '_bwo_failed', true );
+		}
+		$webp_data    = get_post_meta( $this->id, '_budi_webp_data', true );
+		if ( empty( $webp_data ) ) {
+			$webp_data = get_post_meta( $this->id, '_bwo_webp_data', true );
+		}
+		$is_converted = get_post_meta( $this->id, '_budi_webp_converted', true );
+		if ( '' === $is_converted ) {
+			$is_converted = get_post_meta( $this->id, '_bwo_converted', true );
+		}
 		$is_webp_mime = ( 'image/webp' === $this->mime_type || ( $this->file_path && 'webp' === strtolower( pathinfo( $this->file_path, PATHINFO_EXTENSION ) ) ) );
 
 		if ( $this->file_path && file_exists( $this->file_path ) ) {
@@ -72,11 +81,11 @@ class BWO_Attachment {
 			} elseif ( $is_webp_mime ) {
 				$this->webp_size = $this->original_size;
 			}
-			$this->savings_percent = BWO_Formatting::calculate_savings_percent( $this->original_size, $this->webp_size );
+			$this->savings_percent = BUDI_WebP_Formatting::calculate_savings_percent( $this->original_size, $this->webp_size );
 
 			// If it's already a WebP image, clear any bogus failed flag from prior conversion attempts
 			if ( $is_webp_mime && $is_failed ) {
-				delete_post_meta( $this->id, '_bwo_failed' );
+				delete_post_meta( $this->id, '_budi_webp_failed' );
 			}
 		} elseif ( $is_failed ) {
 			$this->status = 'failed';
@@ -99,9 +108,9 @@ class BWO_Attachment {
 			'dimensions'      => ( $this->width && $this->height ) ? "{$this->width} × {$this->height}" : '—',
 			'thumbnail_url'   => $this->get_thumbnail_url(),
 			'original_size'   => $this->original_size,
-			'original_size_f' => BWO_Formatting::format_bytes( $this->original_size ),
+			'original_size_f' => BUDI_WebP_Formatting::format_bytes( $this->original_size ),
 			'webp_size'       => $this->webp_size,
-			'webp_size_f'     => $this->webp_size > 0 ? BWO_Formatting::format_bytes( $this->webp_size ) : '—',
+			'webp_size_f'     => $this->webp_size > 0 ? BUDI_WebP_Formatting::format_bytes( $this->webp_size ) : '—',
 			'savings_percent' => $this->savings_percent > 0 ? round( $this->savings_percent ) . '%' : '—',
 			'status'          => $this->status,
 			'has_backup'      => $this->has_backup,

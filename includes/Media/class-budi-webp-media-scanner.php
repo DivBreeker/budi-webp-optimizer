@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Media_Scanner {
+class BUDI_WebP_Media_Scanner {
 
 	/**
 	 * Get summary statistics for dashboard cards and progress meter.
@@ -19,7 +19,7 @@ class BWO_Media_Scanner {
 	 * @return array
 	 */
 	public static function get_summary_stats( $force_refresh = false ) {
-		$cached = get_transient( 'bwo_stats_summary' );
+		$cached = get_transient( 'budi_webp_stats_summary' );
 		if ( ! $force_refresh && false !== $cached && is_array( $cached ) ) {
 			return $cached;
 		}
@@ -27,12 +27,12 @@ class BWO_Media_Scanner {
 		global $wpdb;
 
 		// Count total eligible images (JPG/PNG or attachments converted by BWO or native WebP)
-		$all_attachments = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Stats are cached in transient bwo_stats_summary; direct query needed for accurate live counts.
+		$all_attachments = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Stats are cached in transient budi_webp_stats_summary; direct query needed for accurate live counts.
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->posts} 
 				WHERE post_type = 'attachment' 
 				AND (post_mime_type IN (%s, %s, %s, %s) OR ID IN (
-					SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_bwo_converted' AND meta_value = '1'
+					SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_budi_webp_converted' AND meta_value = '1'
 				))",
 				'image/jpeg',
 				'image/png',
@@ -49,11 +49,11 @@ class BWO_Media_Scanner {
 		$total_saved     = 0;
 
 		if ( $total_count > 0 ) {
-			// Get converted IDs: attachments with _bwo_converted = '1' OR post_mime_type = 'image/webp'
-			$converted_ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Stats cached in transient bwo_stats_summary.
+			// Get converted IDs: attachments with _budi_webp_converted = '1' OR post_mime_type = 'image/webp'
+			$converted_ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Stats cached in transient budi_webp_stats_summary.
 				$wpdb->prepare(
 					"SELECT DISTINCT p.ID FROM {$wpdb->posts} p
-					LEFT JOIN {$wpdb->postmeta} pm_conv ON (p.ID = pm_conv.post_id AND pm_conv.meta_key = '_bwo_converted')
+					LEFT JOIN {$wpdb->postmeta} pm_conv ON (p.ID = pm_conv.post_id AND pm_conv.meta_key = '_budi_webp_converted')
 					WHERE p.post_type = 'attachment' 
 					AND (p.post_mime_type = %s OR pm_conv.meta_value = '1')",
 					'image/webp'
@@ -63,23 +63,23 @@ class BWO_Media_Scanner {
 			$converted_count   = count( $converted_ids );
 
 			// Get failed IDs (excluding any that are already in WebP format)
-			$failed_ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Stats cached in transient bwo_stats_summary.
+			$failed_ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Stats cached in transient budi_webp_stats_summary.
 				$wpdb->prepare(
 					"SELECT DISTINCT pm_fail.post_id FROM {$wpdb->postmeta} pm_fail
 					INNER JOIN {$wpdb->posts} p ON (pm_fail.post_id = p.ID)
 					WHERE pm_fail.meta_key = %s
 					AND p.post_mime_type != %s",
-					'_bwo_failed',
+					'_budi_webp_failed',
 					'image/webp'
 				)
 			);
 			$failed_count = count( $failed_ids );
 
-			// Compute storage savings from _bwo_webp_data
-			$webp_data_rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Stats cached in transient bwo_stats_summary.
+			// Compute storage savings from _budi_webp_data
+			$webp_data_rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Stats cached in transient budi_webp_stats_summary.
 				$wpdb->prepare(
 					"SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = %s",
-					'_bwo_webp_data'
+					'_budi_webp_data'
 				),
 				ARRAY_A
 			);
@@ -113,17 +113,17 @@ class BWO_Media_Scanner {
 			'percent_completed'  => $percent_done,
 			'percent_donut'      => round( $percent_done ),
 			'storage_saved'      => $total_saved,
-			'storage_saved_f'    => BWO_Formatting::format_bytes( $total_saved ),
+			'storage_saved_f'    => BUDI_WebP_Formatting::format_bytes( $total_saved ),
 			'original_size'      => $total_orig_size,
-			'original_size_f'    => BWO_Formatting::format_bytes( $total_orig_size ),
+			'original_size_f'    => BUDI_WebP_Formatting::format_bytes( $total_orig_size ),
 			'current_size'       => $total_curr_size,
-			'current_size_f'     => BWO_Formatting::format_bytes( $total_curr_size ),
+			'current_size_f'     => BUDI_WebP_Formatting::format_bytes( $total_curr_size ),
 			'average_reduction'  => $avg_reduction,
 			'reduction_label'    => $avg_reduction > 0 ? $avg_reduction . '% average reduction' : '0% average reduction',
 			'last_updated'       => time(),
 		);
 
-		set_transient( 'bwo_stats_summary', $stats, HOUR_IN_SECONDS );
+		set_transient( 'budi_webp_stats_summary', $stats, HOUR_IN_SECONDS );
 		return $stats;
 	}
 
@@ -172,11 +172,11 @@ class BWO_Media_Scanner {
 			$query_args['meta_query']     = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				'relation' => 'AND',
 				array(
-					'key'     => '_bwo_converted',
+					'key'     => '_budi_webp_converted',
 					'compare' => 'NOT EXISTS',
 				),
 				array(
-					'key'     => '_bwo_failed',
+					'key'     => '_budi_webp_failed',
 					'compare' => 'NOT EXISTS',
 				),
 			);
@@ -184,7 +184,7 @@ class BWO_Media_Scanner {
 			$query_args['post_mime_type'] = array( 'image/jpeg', 'image/png', 'image/jpg' );
 			$query_args['meta_query']     = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				array(
-					'key'     => '_bwo_failed',
+					'key'     => '_budi_webp_failed',
 					'compare' => 'EXISTS',
 				),
 			);
@@ -199,7 +199,7 @@ class BWO_Media_Scanner {
 
 		$items = array();
 		foreach ( $ids as $id ) {
-			$att     = new BWO_Attachment( $id );
+			$att     = new BUDI_WebP_Attachment( $id );
 			$items[] = $att->to_table_array();
 		}
 
@@ -224,8 +224,8 @@ class BWO_Media_Scanner {
 			return $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk processing requires fresh uncached data.
 				$wpdb->prepare(
 					"SELECT p.ID FROM {$wpdb->posts} p
-					LEFT JOIN {$wpdb->postmeta} pm_conv ON (p.ID = pm_conv.post_id AND pm_conv.meta_key = '_bwo_converted')
-					LEFT JOIN {$wpdb->postmeta} pm_fail ON (p.ID = pm_fail.post_id AND pm_fail.meta_key = '_bwo_failed')
+					LEFT JOIN {$wpdb->postmeta} pm_conv ON (p.ID = pm_conv.post_id AND pm_conv.meta_key = '_budi_webp_converted')
+					LEFT JOIN {$wpdb->postmeta} pm_fail ON (p.ID = pm_fail.post_id AND pm_fail.meta_key = '_budi_webp_failed')
 					WHERE p.post_type = 'attachment' 
 					AND p.post_mime_type IN (%s, %s, %s)
 					AND pm_conv.meta_value IS NULL
@@ -244,7 +244,7 @@ class BWO_Media_Scanner {
 					WHERE p.post_type = 'attachment'
 					AND p.post_mime_type IN (%s, %s, %s)
 					ORDER BY p.ID DESC",
-					'_bwo_failed',
+					'_budi_webp_failed',
 					'image/jpeg',
 					'image/png',
 					'image/jpg'
@@ -256,7 +256,7 @@ class BWO_Media_Scanner {
 		return $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk processing requires fresh uncached data.
 			$wpdb->prepare(
 				"SELECT p.ID FROM {$wpdb->posts} p
-				LEFT JOIN {$wpdb->postmeta} pm_conv ON (p.ID = pm_conv.post_id AND pm_conv.meta_key = '_bwo_converted')
+				LEFT JOIN {$wpdb->postmeta} pm_conv ON (p.ID = pm_conv.post_id AND pm_conv.meta_key = '_budi_webp_converted')
 				WHERE p.post_type = 'attachment' 
 				AND p.post_mime_type IN (%s, %s, %s)
 				AND pm_conv.meta_value IS NULL

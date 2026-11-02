@@ -3,7 +3,7 @@
  * Plugin Name:       BUDI WebP Optimizer
  * Plugin URI:        https://github.com/DivBreeker/budi-webp-optimizer
  * Description:       Convert smarter. Load faster. Ultra-lightweight WordPress WebP image optimizer with safe backup rollback and WooCommerce support.
- * Version:           1.0.3
+ * Version:           1.0.4
  * Author:            BUDI Studio
  * Author URI:        https://budistudio.vercel.app/
  * License:           GPL-2.0+
@@ -22,52 +22,52 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Current plugin version and paths.
  */
-define( 'BWO_VERSION', '1.0.3' );
-define( 'BWO_PLUGIN_NAME', 'budi-webp-optimizer' );
-define( 'BWO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'BWO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'BWO_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'BUDI_WEBP_VERSION', '1.0.4' );
+define( 'BUDI_WEBP_PLUGIN_NAME', 'budi-webp-optimizer' );
+define( 'BUDI_WEBP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'BUDI_WEBP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'BUDI_WEBP_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 /**
  * Autoloader or explicit include of core plugin classes.
  */
-require_once BWO_PLUGIN_DIR . 'includes/Helpers/class-bwo-formatting.php';
-require_once BWO_PLUGIN_DIR . 'includes/Helpers/class-bwo-logger.php';
-require_once BWO_PLUGIN_DIR . 'includes/Helpers/class-bwo-utils.php';
-require_once BWO_PLUGIN_DIR . 'includes/Security/class-bwo-permissions.php';
-require_once BWO_PLUGIN_DIR . 'includes/Security/class-bwo-nonce.php';
-require_once BWO_PLUGIN_DIR . 'includes/Security/class-bwo-file-safety.php';
-require_once BWO_PLUGIN_DIR . 'includes/Compatibility/class-bwo-server-check.php';
-require_once BWO_PLUGIN_DIR . 'includes/Conversion/class-bwo-conversion-result.php';
-require_once BWO_PLUGIN_DIR . 'includes/Conversion/class-bwo-quality.php';
-require_once BWO_PLUGIN_DIR . 'includes/Conversion/class-bwo-image-validator.php';
-require_once BWO_PLUGIN_DIR . 'includes/Conversion/class-bwo-webp-encoder.php';
-require_once BWO_PLUGIN_DIR . 'includes/Conversion/class-bwo-converter.php';
-require_once BWO_PLUGIN_DIR . 'includes/Backup/class-bwo-backup-manager.php';
-require_once BWO_PLUGIN_DIR . 'includes/Backup/class-bwo-restore-manager.php';
-require_once BWO_PLUGIN_DIR . 'includes/Media/class-bwo-attachment.php';
-require_once BWO_PLUGIN_DIR . 'includes/Media/class-bwo-thumbnail-handler.php';
-require_once BWO_PLUGIN_DIR . 'includes/Media/class-bwo-media-replacer.php';
-require_once BWO_PLUGIN_DIR . 'includes/Media/class-bwo-media-scanner.php';
-require_once BWO_PLUGIN_DIR . 'includes/Queue/class-bwo-job-queue.php';
-require_once BWO_PLUGIN_DIR . 'includes/Admin/class-bwo-settings.php';
-require_once BWO_PLUGIN_DIR . 'includes/Admin/class-bwo-admin-menu.php';
-require_once BWO_PLUGIN_DIR . 'includes/Admin/class-bwo-admin.php';
-require_once BWO_PLUGIN_DIR . 'includes/class-bwo-activator.php';
-require_once BWO_PLUGIN_DIR . 'includes/class-bwo-deactivator.php';
-require_once BWO_PLUGIN_DIR . 'includes/class-bwo-plugin.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Helpers/class-budi-webp-formatting.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Helpers/class-budi-webp-logger.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Helpers/class-budi-webp-utils.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Security/class-budi-webp-permissions.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Security/class-budi-webp-nonce.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Security/class-budi-webp-file-safety.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Compatibility/class-budi-webp-server-check.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Conversion/class-budi-webp-conversion-result.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Conversion/class-budi-webp-quality.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Conversion/class-budi-webp-image-validator.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Conversion/class-budi-webp-webp-encoder.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Conversion/class-budi-webp-converter.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Backup/class-budi-webp-backup-manager.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Backup/class-budi-webp-restore-manager.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Media/class-budi-webp-attachment.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Media/class-budi-webp-thumbnail-handler.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Media/class-budi-webp-media-replacer.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Media/class-budi-webp-media-scanner.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Queue/class-budi-webp-job-queue.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Admin/class-budi-webp-settings.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Admin/class-budi-webp-admin-menu.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Admin/class-budi-webp-admin.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/class-budi-webp-activator.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/class-budi-webp-deactivator.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/class-budi-webp-plugin.php';
 
 /**
  * Activation and Deactivation Hooks
  */
-register_activation_hook( __FILE__, array( 'BWO_Activator', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'BWO_Deactivator', 'deactivate' ) );
+register_activation_hook( __FILE__, array( 'BUDI_WebP_Activator', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'BUDI_WebP_Deactivator', 'deactivate' ) );
 
 /**
  * Initialize and run plugin.
  */
 function run_budi_webp_optimizer() {
-	$plugin = BWO_Plugin::get_instance();
+	$plugin = BUDI_WebP_Plugin::get_instance();
 	$plugin->run();
 }
 run_budi_webp_optimizer();

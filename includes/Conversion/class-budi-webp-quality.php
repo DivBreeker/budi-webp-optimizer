@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_Quality {
+class BUDI_WebP_Quality {
 
 	const DEFAULT_QUALITY = 85;
 	const MIN_QUALITY     = 50;
@@ -26,7 +26,7 @@ class BWO_Quality {
 			return self::sanitize( $custom_quality );
 		}
 
-		$settings = get_option( 'bwo_settings', array() );
+		$settings = get_option( 'budi_webp_settings', array() );
 		$quality  = isset( $settings['quality'] ) ? (int) $settings['quality'] : self::DEFAULT_QUALITY;
 
 		return self::sanitize( $quality );

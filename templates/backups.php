@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$backup_rows = BWO_Backup_Manager::get_all_backups( 100 );
+$backup_rows = BUDI_WebP_Backup_Manager::get_all_backups( 100 );
 
 $total_backup_size = 0;
 if ( ! empty( $backup_rows ) ) {
@@ -34,7 +34,7 @@ if ( ! empty( $backup_rows ) ) {
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
 				<span><?php esc_html_e( 'Back to Dashboard', 'budi-webp-optimizer' ); ?></span>
 			</a>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=bwo-media-library' ) ); ?>" class="bwo-header-link">
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=budi-webp-media-library' ) ); ?>" class="bwo-header-link">
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
 				<span><?php esc_html_e( 'Media Library', 'budi-webp-optimizer' ); ?></span>
 			</a>
@@ -63,7 +63,7 @@ if ( ! empty( $backup_rows ) ) {
 	<div class="bwo-card" style="padding: 16px 24px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
 		<div>
 			<span style="font-size: 13px; color: #64748b;"><?php esc_html_e( 'Storage used by backups:', 'budi-webp-optimizer' ); ?></span>
-			<strong style="font-size: 16px; color: #0f172a; margin-left: 8px;"><?php echo esc_html( BWO_Formatting::format_bytes( $total_backup_size ) ); ?></strong>
+			<strong style="font-size: 16px; color: #0f172a; margin-left: 8px;"><?php echo esc_html( BUDI_WebP_Formatting::format_bytes( $total_backup_size ) ); ?></strong>
 		</div>
 		<span style="font-size: 12px; color: #94a3b8;"><?php esc_html_e( 'Location: wp-content/uploads/budi-webp-optimizer-backups/', 'budi-webp-optimizer' ); ?></span>
 	</div>
@@ -93,8 +93,8 @@ if ( ! empty( $backup_rows ) ) {
 							if ( ! is_array( $data ) ) continue;
 							$post_id   = (int) $row['post_id'];
 							$file_name = ! empty( $data['original_filename'] ) ? $data['original_filename'] : basename( $data['original_file'] );
-							$date      = ! empty( $data['timestamp'] ) ? BWO_Formatting::format_date( $data['timestamp'] ) : '—';
-							$size      = ! empty( $data['original_size'] ) ? BWO_Formatting::format_bytes( $data['original_size'] ) : '—';
+							$date      = ! empty( $data['timestamp'] ) ? BUDI_WebP_Formatting::format_date( $data['timestamp'] ) : '—';
+							$size      = ! empty( $data['original_size'] ) ? BUDI_WebP_Formatting::format_bytes( $data['original_size'] ) : '—';
 						?>
 							<tr id="bwo-backup-row-<?php echo esc_attr( $post_id ); ?>">
 								<td>#<?php echo esc_html( $post_id ); ?></td>

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BWO_WebP_Encoder {
+class BUDI_WebP_WebP_Encoder {
 
 	/**
 	 * Encode single file to WebP.
@@ -20,12 +20,12 @@ class BWO_WebP_Encoder {
 	 * @return true|WP_Error
 	 */
 	public static function encode( $source_path, $destination_path, $quality = 85 ) {
-		$validation = BWO_Image_Validator::validate( $source_path );
+		$validation = BUDI_WebP_Image_Validator::validate( $source_path );
 		if ( is_wp_error( $validation ) ) {
 			return $validation;
 		}
 
-		$quality = BWO_Quality::sanitize( $quality );
+		$quality = BUDI_WebP_Quality::sanitize( $quality );
 
 		// Method 1: WordPress Image Editor (Recommended Native Way)
 		if ( function_exists( 'wp_get_image_editor' ) ) {
@@ -88,10 +88,10 @@ class BWO_WebP_Encoder {
 					return true;
 				}
 			} catch ( Exception $e ) {
-				return new WP_Error( 'bwo_imagick_failed', $e->getMessage() );
+				return new WP_Error( 'budi_webp_imagick_failed', $e->getMessage() );
 			}
 		}
 
-		return new WP_Error( 'bwo_encoding_failed', __( 'Server failed to encode image to WebP. Check GD or Imagick support.', 'budi-webp-optimizer' ) );
+		return new WP_Error( 'budi_webp_encoding_failed', __( 'Server failed to encode image to WebP. Check GD or Imagick support.', 'budi-webp-optimizer' ) );
 	}
 }
