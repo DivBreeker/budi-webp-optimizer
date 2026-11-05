@@ -1,7 +1,7 @@
 /**
  * BUDI WebP Optimizer - Admin JavaScript
  * Pure vanilla / jQuery lightweight controller.
- * Version: 1.0.6
+ * Version: 1.0.7
  */
 
 (function($) {
@@ -466,6 +466,40 @@
 							$status.fadeOut(300);
 						}, 3500);
 					}
+				});
+			});
+
+			// Database Content Synchronizer Button Handler
+			$('#bwo-btn-sync-posts, #bwo-btn-sync-posts-settings').on('click', function(e) {
+				e.preventDefault();
+				var $btn = $(this);
+				var isDashboard = $btn.attr('id') === 'bwo-btn-sync-posts';
+				var $statusText = isDashboard ? $('#bwo-sync-btn-status') : $('#bwo-sync-settings-status');
+
+				if (!confirm('This will search all published posts and permanently update image links from JPG/PNG to WebP in your database so images display permanently even if this plugin is uninstalled. Proceed?')) {
+					return;
+				}
+
+				$btn.prop('disabled', true);
+				$statusText.text('Syncing post content...').css('color', '#3b82f6');
+
+				$.post(budiWebpData.ajaxUrl, {
+					action: 'budi_webp_sync_post_content',
+					budi_webp_nonce: budiWebpData.nonce
+				}, function(res) {
+					$btn.prop('disabled', false);
+					if (res.success) {
+						$statusText.text(res.data.message || 'Sync completed!').css('color', '#10b981');
+						alert(res.data.message || 'Post content synchronized successfully!');
+					} else {
+						var errMsg = res.data && res.data.message ? res.data.message : 'Sync failed.';
+						$statusText.text(errMsg).css('color', '#ef4444');
+						alert(errMsg);
+					}
+				}).fail(function() {
+					$btn.prop('disabled', false);
+					$statusText.text('Request failed. Check server logs.').css('color', '#ef4444');
+					alert('Sync request failed. Please check your network or server logs.');
 				});
 			});
 		},

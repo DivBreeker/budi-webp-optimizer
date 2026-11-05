@@ -29,6 +29,7 @@ class BUDI_WebP_Admin {
 		add_action( 'wp_ajax_budi_webp_get_preview', array( __CLASS__, 'ajax_get_preview' ) );
 		add_action( 'wp_ajax_budi_webp_clear_logs', array( __CLASS__, 'ajax_clear_logs' ) );
 		add_action( 'wp_ajax_budi_webp_get_logs', array( __CLASS__, 'ajax_get_logs' ) );
+		add_action( 'wp_ajax_budi_webp_sync_post_content', array( __CLASS__, 'ajax_sync_post_content' ) );
 
 		// Auto convert on upload if setting enabled
 		add_filter( 'wp_generate_attachment_metadata', array( __CLASS__, 'handle_auto_convert_on_upload' ), 10, 2 );
@@ -257,6 +258,30 @@ class BUDI_WebP_Admin {
 			array(
 				'message' => $message,
 				'stats'   => BUDI_WebP_Media_Scanner::get_summary_stats( true ),
+			)
+		);
+	}
+
+	/**
+	 * AJAX: Synchronize post_content image URLs to WebP permanently in the database.
+	 */
+	public static function ajax_sync_post_content() {
+		BUDI_WebP_Permissions::verify_or_die();
+		BUDI_WebP_Nonce::verify_or_die();
+
+		$res = BUDI_WebP_Content_Updater::sync_all_posts();
+		/* translators: 1: number of updated URLs, 2: number of updated posts */
+		$message = sprintf(
+			__( 'Successfully synced %1$d image URLs across %2$d posts to WebP.', 'budi-webp-optimizer' ),
+			$res['updated_urls'],
+			$res['updated_posts']
+		);
+
+		wp_send_json_success(
+			array(
+				'message'       => $message,
+				'updated_urls'  => $res['updated_urls'],
+				'updated_posts' => $res['updated_posts'],
 			)
 		);
 	}

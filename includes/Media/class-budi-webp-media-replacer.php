@@ -56,6 +56,9 @@ class BUDI_WebP_Media_Replacer {
 			wp_delete_file( $original_file );
 		}
 
+		// Step 5: Sync post_content references so blog posts point to WebP immediately
+		BUDI_WebP_Content_Updater::sync_single_attachment( $attachment_id );
+
 		BUDI_WebP_Logger::log( "Replaced attachment #{$attachment_id} with WebP: {$new_relative}" );
 		return true;
 	}

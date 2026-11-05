@@ -4,7 +4,7 @@ Tags: webp, image optimizer, performance, compression, media library
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,6 +57,11 @@ Yes. You can delete individual image backups or click "Clear All Backups" in the
 = What image formats are supported? =
 JPEG (`.jpg`, `.jpeg`) and PNG (`.png`) formats are supported for WebP conversion.
 
+= What happens to image URLs inside my blog posts after conversion? =
+BUDI WebP Optimizer handles this seamlessly in two ways:
+1. Dynamic Frontend Delivery: It automatically intercepts post content (`the_content`) and serves existing `.webp` images immediately without modifying post revisions.
+2. Permanent Database Synchronizer: With 1 click in the dashboard or settings, you can permanently sync hardcoded image URLs inside `post_content` in your WordPress database to `.webp`. Even if you deactivate or uninstall this plugin, your published posts will permanently load the WebP images!
+
 = Does this plugin inject CSS or JavaScript on my website frontend? =
 No. Admin scripts and styles are strictly loaded on the plugin's WordPress admin pages. Zero scripts or stylesheets are loaded on your public website.
 
@@ -70,6 +75,12 @@ No. Admin scripts and styles are strictly loaded on the plugin's WordPress admin
 6. Diagnostic Reports screen with server WebP environment status and real-time Activity Logs.
 
 == Changelog ==
+
+= 1.0.7 =
+* Added dynamic frontend WebP content delivery filter (`the_content`, `the_excerpt`, `widget_text`, `post_thumbnail_html`) to instantly display converted WebP images across all existing blog posts and pages.
+* Added Database Content URL Synchronizer (`BUDI_WebP_Content_Updater`) to permanently update hardcoded image URLs from JPG/PNG to WebP in `wp_posts`, ensuring zero broken images even if the plugin is uninstalled.
+* Automatically sync post content when converting individual images in Replace mode.
+* Added 1-click "Sync Post URLs to WebP" action button to the Dashboard and Settings screens.
 
 = 1.0.6 =
 * Fixed asset enqueuing hooks across all subpages (Media Library, Bulk Convert, Settings, Backups, and Reports) to ensure styles and scripts load consistently.

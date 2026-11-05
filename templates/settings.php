@@ -135,6 +135,16 @@ $budi_webp_optimizer_settings = BUDI_WebP_Settings::get_settings();
 				</label>
 			</div>
 
+			<div class="bwo-settings-section">
+				<h3><?php esc_html_e( 'Database Content Synchronizer', 'budi-webp-optimizer' ); ?></h3>
+				<p class="bwo-desc"><?php esc_html_e( 'Permanently update hardcoded image URLs (.jpg/.png to .webp) inside all published posts and pages. Even if you deactivate or uninstall this plugin later, your images will permanently stay as WebP without breaking!', 'budi-webp-optimizer' ); ?></p>
+				<button type="button" class="bwo-btn bwo-btn-white" id="bwo-btn-sync-posts-settings" style="display: inline-flex; align-items: center; gap: 8px;">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+					<span id="bwo-sync-settings-btn-text"><?php esc_html_e( 'Sync All Post Image URLs to WebP', 'budi-webp-optimizer' ); ?></span>
+				</button>
+				<span id="bwo-sync-settings-status" style="margin-left: 12px; font-size: 13px; font-weight: 500;"></span>
+			</div>
+
 			<div class="bwo-settings-footer">
 				<button type="submit" class="bwo-btn bwo-btn-green" id="bwo-btn-save-settings-standalone">
 					<span><?php esc_html_e( 'Save Settings', 'budi-webp-optimizer' ); ?></span>

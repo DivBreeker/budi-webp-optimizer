@@ -3,7 +3,7 @@
  * Plugin Name:       BUDI WebP Optimizer
  * Plugin URI:        https://github.com/DivBreeker/budi-webp-optimizer
  * Description:       Convert smarter. Load faster. Ultra-lightweight WordPress WebP image optimizer with safe backup rollback and WooCommerce support.
- * Version:           1.0.6
+ * Version:           1.0.7
  * Author:            BUDI Studio
  * Author URI:        https://budistudio.vercel.app/
  * License:           GPL-2.0+
@@ -22,7 +22,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Current plugin version and paths.
  */
-define( 'BUDI_WEBP_VERSION', '1.0.6' );
+define( 'BUDI_WEBP_VERSION', '1.0.7' );
 define( 'BUDI_WEBP_PLUGIN_NAME', 'budi-webp-optimizer' );
 define( 'BUDI_WEBP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BUDI_WEBP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -45,6 +45,8 @@ require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Conversion/class-budi-webp-webp-en
 require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Conversion/class-budi-webp-converter.php';
 require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Backup/class-budi-webp-backup-manager.php';
 require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Backup/class-budi-webp-restore-manager.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Database/class-budi-webp-content-updater.php';
+require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Frontend/class-budi-webp-frontend.php';
 require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Media/class-budi-webp-attachment.php';
 require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Media/class-budi-webp-thumbnail-handler.php';
 require_once BUDI_WEBP_PLUGIN_DIR . 'includes/Media/class-budi-webp-media-replacer.php';

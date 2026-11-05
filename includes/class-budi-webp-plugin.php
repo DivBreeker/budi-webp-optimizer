@@ -34,6 +34,9 @@ class BUDI_WebP_Plugin {
 	private function init_hooks() {
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 
+		// Frontend WebP content delivery filter.
+		BUDI_WebP_Frontend::init();
+
 		if ( is_admin() ) {
 			BUDI_WebP_Admin_Menu::init();
 			BUDI_WebP_Admin::init();

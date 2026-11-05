@@ -198,6 +198,17 @@ $budi_webp_optimizer_logs     = BUDI_WebP_Logger::get_logs();
 						<span class="bwo-btn-subline-dark"><?php esc_html_e( 'Choose specific images to convert in Media Library', 'budi-webp-optimizer' ); ?></span>
 					</div>
 				</a>
+
+				<!-- Sync Post URLs Button Card -->
+				<button type="button" class="bwo-action-btn-white" id="bwo-btn-sync-posts" style="text-align: left; cursor: pointer;">
+					<div class="bwo-btn-icon-box">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+					</div>
+					<div class="bwo-action-btn-text">
+						<strong class="bwo-btn-headline-dark" id="bwo-sync-btn-headline"><?php esc_html_e( 'Sync Post URLs to WebP', 'budi-webp-optimizer' ); ?></strong>
+						<span class="bwo-btn-subline-dark" id="bwo-sync-btn-status"><?php esc_html_e( 'Permanently update image URLs inside published posts/pages', 'budi-webp-optimizer' ); ?></span>
+					</div>
+				</button>
 			</div>
 		</div>
 	</div>
