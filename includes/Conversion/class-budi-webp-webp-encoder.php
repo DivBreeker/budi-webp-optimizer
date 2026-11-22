@@ -80,6 +80,12 @@ class BUDI_WebP_WebP_Encoder {
 				$imagick->setImageFormat( 'webp' );
 				$imagick->setImageCompressionQuality( $quality );
 				$imagick->setOption( 'webp:method', '6' ); // Best compression method
+
+				$settings = BUDI_WebP_Settings::get_settings();
+				if ( ! empty( $settings['strip_metadata'] ) ) {
+					$imagick->stripImage(); // Remove camera & EXIF metadata for maximum compression
+				}
+
 				$imagick->writeImage( $destination_path );
 				$imagick->clear();
 				$imagick->destroy();

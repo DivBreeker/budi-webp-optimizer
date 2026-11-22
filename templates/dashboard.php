@@ -388,6 +388,38 @@ $budi_webp_optimizer_logs     = BUDI_WebP_Logger::get_logs();
 						</label>
 					</div>
 
+					<div class="bwo-settings-section">
+						<h3><?php esc_html_e( 'Image Optimization & Size Reduction', 'budi-webp-optimizer' ); ?></h3>
+						<p class="bwo-desc"><?php esc_html_e( 'Native server-side optimization to strip bloated metadata and downscale oversized camera uploads.', 'budi-webp-optimizer' ); ?></p>
+
+						<label class="bwo-switch-row">
+							<input type="checkbox" name="strip_metadata" value="1" <?php checked( ! empty( $budi_webp_optimizer_settings['strip_metadata'] ) ); ?> />
+							<div>
+								<strong><?php esc_html_e( 'Strip EXIF & Camera Metadata', 'budi-webp-optimizer' ); ?></strong>
+								<span><?php esc_html_e( 'Removes bloated GPS location, camera model, and profile metadata. Reduces file size by 15-30% with zero quality loss.', 'budi-webp-optimizer' ); ?></span>
+							</div>
+						</label>
+
+						<label class="bwo-switch-row">
+							<input type="checkbox" name="auto_resize" value="1" <?php checked( ! empty( $budi_webp_optimizer_settings['auto_resize'] ) ); ?> />
+							<div>
+								<strong><?php esc_html_e( 'Auto-Resize Oversized Uploads', 'budi-webp-optimizer' ); ?></strong>
+								<span><?php esc_html_e( 'Automatically scales down huge camera photos (4K/6K) to a web-optimized maximum dimension on upload, saving massive disk space.', 'budi-webp-optimizer' ); ?></span>
+							</div>
+						</label>
+
+						<div style="margin-top: 14px; margin-left: 48px;">
+							<label style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 4px;">
+								<?php esc_html_e( 'Maximum Image Dimension (Width / Height)', 'budi-webp-optimizer' ); ?>
+							</label>
+							<select name="max_dimension" class="bwo-select" style="padding: 6px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px;">
+								<option value="1920" <?php selected( (int) ( $budi_webp_optimizer_settings['max_dimension'] ?? 2048 ), 1920 ); ?>>1920px (Full HD - Optimal for standard blogs & sites)</option>
+								<option value="2048" <?php selected( (int) ( $budi_webp_optimizer_settings['max_dimension'] ?? 2048 ), 2048 ); ?>>2048px (2K - Recommended for sharp retina screens)</option>
+								<option value="2560" <?php selected( (int) ( $budi_webp_optimizer_settings['max_dimension'] ?? 2048 ), 2560 ); ?>>2560px (QHD - High-resolution photography)</option>
+							</select>
+						</div>
+					</div>
+
 					<div class="bwo-settings-footer">
 						<button type="submit" class="bwo-btn bwo-btn-green" id="bwo-btn-save-settings">
 							<span><?php esc_html_e( 'Save Configuration', 'budi-webp-optimizer' ); ?></span>

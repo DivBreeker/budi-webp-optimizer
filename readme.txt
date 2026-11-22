@@ -4,7 +4,7 @@ Tags: webp, image optimizer, performance, compression, media library
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,6 +19,8 @@ Convert your existing JPEG and PNG media library to modern, lightweight WebP for
 ### Why BUDI WebP Optimizer?
 
 * **100% Lightweight**: Built exclusively on native WordPress APIs (`wp_get_image_editor()`) and standard server WebP encoders (GD / Imagick). Zero heavy third-party vendor bloat or external API dependencies.
+* **EXIF & Metadata Stripper**: Strips GPS coordinates, camera models, and profile bloat from uploads, reducing file sizes by 15-30% with zero visual quality loss.
+* **Auto-Resize Oversized Uploads**: Automatically downscales massive 4K/6K camera uploads to web-optimized dimensions (1920px, 2048px, or 2560px), reclaiming massive server disk space.
 * **Modern Dashboard**: Complete control over your library with live conversion stats, animated donut gauge, storage savings calculator, and quick actions.
 * **Two Safe Conversion Modes**:
   * **Keep Original & Create WebP**: Keeps your original file untouched and creates adjacent WebP files for seamless delivery.
@@ -57,6 +59,11 @@ Yes. You can delete individual image backups or click "Clear All Backups" in the
 = What image formats are supported? =
 JPEG (`.jpg`, `.jpeg`) and PNG (`.png`) formats are supported for WebP conversion.
 
+= Does this plugin optimize and reduce file size of images? =
+Yes! Beyond converting images to lightweight WebP, BUDI WebP Optimizer includes a native server-side Image Optimization engine:
+1. EXIF Metadata Stripping: Removes GPS coordinates, camera models, and unnecessary profile bloat, reducing file sizes by 15-30% without any visual quality loss.
+2. Auto-Resize on Upload: Automatically downsizes massive mobile/camera uploads (e.g. 4000px+) to your chosen maximum dimension (1920px, 2048px, or 2560px), preventing storage bloat.
+
 = What happens to image URLs inside my blog posts after conversion? =
 BUDI WebP Optimizer handles this seamlessly in two ways:
 1. Dynamic Frontend Delivery: It automatically intercepts post content (`the_content`) and serves existing `.webp` images immediately without modifying post revisions.
@@ -75,6 +82,13 @@ No. Admin scripts and styles are strictly loaded on the plugin's WordPress admin
 6. Diagnostic Reports screen with server WebP environment status and real-time Activity Logs.
 
 == Changelog ==
+
+= 1.0.8 =
+* Added Native Image Optimization Engine (`BUDI_WebP_Image_Optimizer`) to strip bloated EXIF, GPS, and camera metadata from uploads for 15-30% smaller files without quality loss.
+* Added Auto-Resize feature on upload with configurable maximum image dimensions (1920px Full HD, 2048px 2K, 2560px QHD).
+* Hooked into WordPress core `big_image_size_threshold` to align core thumbnail generation with user-defined maximum bounds.
+* Enhanced WebP encoder with automatic metadata stripping in Imagick and GD.
+* Added dedicated configuration controls in Dashboard and Settings screens.
 
 = 1.0.7 =
 * Added dynamic frontend WebP content delivery filter (`the_content`, `the_excerpt`, `widget_text`, `post_thumbnail_html`) to instantly display converted WebP images across all existing blog posts and pages.

@@ -20,6 +20,9 @@ class BUDI_WebP_Settings {
 			'keep_backup'        => 1,
 			'auto_convert'       => 1,
 			'convert_thumbnails' => 1,
+			'strip_metadata'     => 1,
+			'auto_resize'        => 1,
+			'max_dimension'      => 2048,
 			'batch_size'         => 5,
 			'debug_log'          => 0,
 			'clean_on_uninstall' => 0,
@@ -62,8 +65,16 @@ class BUDI_WebP_Settings {
 		$sanitized['keep_backup']        = ! empty( $new_settings['keep_backup'] ) ? 1 : 0;
 		$sanitized['auto_convert']       = ! empty( $new_settings['auto_convert'] ) ? 1 : 0;
 		$sanitized['convert_thumbnails'] = ! empty( $new_settings['convert_thumbnails'] ) ? 1 : 0;
+		$sanitized['strip_metadata']     = ! empty( $new_settings['strip_metadata'] ) ? 1 : 0;
+		$sanitized['auto_resize']        = ! empty( $new_settings['auto_resize'] ) ? 1 : 0;
 		$sanitized['debug_log']          = ! empty( $new_settings['debug_log'] ) ? 1 : 0;
 		$sanitized['clean_on_uninstall'] = ! empty( $new_settings['clean_on_uninstall'] ) ? 1 : 0;
+
+		if ( isset( $new_settings['max_dimension'] ) ) {
+			$sanitized['max_dimension'] = max( 800, min( 4096, absint( $new_settings['max_dimension'] ) ) );
+		} else {
+			$sanitized['max_dimension'] = ! empty( $current['max_dimension'] ) ? $current['max_dimension'] : 2048;
+		}
 
 		if ( isset( $new_settings['batch_size'] ) ) {
 			$sanitized['batch_size'] = max( 1, min( 20, absint( $new_settings['batch_size'] ) ) );

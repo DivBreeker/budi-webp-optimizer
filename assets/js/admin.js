@@ -1,7 +1,7 @@
 /**
  * BUDI WebP Optimizer - Admin JavaScript
  * Pure vanilla / jQuery lightweight controller.
- * Version: 1.0.7
+ * Version: 1.0.8
  */
 
 (function($) {
@@ -439,6 +439,9 @@
 				var backupVal  = $form.find('input[name="keep_backup"]').is(':checked') ? 1 : 0;
 				var autoVal    = $form.find('input[name="auto_convert"]').is(':checked') ? 1 : 0;
 				var thumbsVal  = $form.find('input[name="convert_thumbnails"]').is(':checked') ? 1 : 0;
+				var stripVal   = $form.find('input[name="strip_metadata"]').is(':checked') ? 1 : 0;
+				var resizeVal  = $form.find('input[name="auto_resize"]').is(':checked') ? 1 : 0;
+				var maxDimVal  = $form.find('select[name="max_dimension"]').val() || 2048;
 				var batchVal   = $form.find('select[name="batch_size"]').val() || 5;
 				var debugVal   = $form.find('input[name="debug_log"]').is(':checked') ? 1 : 0;
 
@@ -448,6 +451,9 @@
 					keep_backup: backupVal,
 					auto_convert: autoVal,
 					convert_thumbnails: thumbsVal,
+					strip_metadata: stripVal,
+					auto_resize: resizeVal,
+					max_dimension: maxDimVal,
 					batch_size: batchVal,
 					debug_log: debugVal
 				};

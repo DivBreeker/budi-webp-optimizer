@@ -37,6 +37,9 @@ class BUDI_WebP_Plugin {
 		// Frontend WebP content delivery filter.
 		BUDI_WebP_Frontend::init();
 
+		// Native Image Optimization & Auto-Resize Engine.
+		BUDI_WebP_Image_Optimizer::init();
+
 		if ( is_admin() ) {
 			BUDI_WebP_Admin_Menu::init();
 			BUDI_WebP_Admin::init();
