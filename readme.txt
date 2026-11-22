@@ -4,7 +4,7 @@ Tags: webp, image optimizer, performance, compression, media library
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.8
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,7 +83,7 @@ No. Admin scripts and styles are strictly loaded on the plugin's WordPress admin
 
 == Changelog ==
 
-= 1.0.8 =
+= 1.1.0 =
 * Added Native Image Optimization Engine (`BUDI_WebP_Image_Optimizer`) to strip bloated EXIF, GPS, and camera metadata from uploads for 15-30% smaller files without quality loss.
 * Added Auto-Resize feature on upload with configurable maximum image dimensions (1920px Full HD, 2048px 2K, 2560px QHD).
 * Hooked into WordPress core `big_image_size_threshold` to align core thumbnail generation with user-defined maximum bounds.
